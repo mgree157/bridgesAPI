@@ -1,5 +1,6 @@
 package src;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import bridges.connect.Bridges;
 import bridges.connect.DataSource;
@@ -22,47 +23,78 @@ public class NCmap {
 
 		Bridges bridges = new Bridges(2001, "mgree157", "581575557990");
 		DataSource ds = bridges.getDataSource();
-
+		// get NC map data
 		String[] states = {"North Carolina"};
 		ArrayList<USState> map_data = ds.getUSMapCountyData(states, true);
 		USState nc = map_data.get(0);
-		
-		List<County> countyList = getNCountyData();
-
-		// get county from countyList and set color and attributes
+		// get counties from NC map
+		List<USCounty> counties = new ArrayList<>();
 		for (Map.Entry<String,USCounty> e: nc.getCounties().entrySet()) {
 			USCounty c = e.getValue();
-			System.out.println(e.getKey() + " " + c.getCountyName());
-			
-			for (County county : countyList) {
-				if (county.countyName.equals(c.getCountyName().split(",")[0])) {
-					double stat = county.foodInsecurity;
-					int colorValue = (int) (255 - (stat * 255 / 100));
-					c.setFillColor(new Color(255, colorValue, colorValue));
-					c.setStrokeColor(new Color(255, colorValue, colorValue));
-					break;
-				}
+			counties.add(c);
+		}
+		// get county data from csv
+		List<County> countyData = dataFetcher();
+
+		
+		
+		// alphabetize counties
+		counties.sort((c1, c2) -> c1.getCountyName().compareTo(c2.getCountyName()));
+		countyData.sort((c1, c2) -> c1.countyName.compareTo(c2.countyName));
+		// check if counties match
+		// binary search for statewide county
+		int index = -1;
+		County statewideCounty = null; 
+		for (int i = 0; i < countyData.size(); i++) {
+			if (countyData.get(i).countyName.equals("Statewide")) {
+				index = i;
+				break;
 			}
 		}
- 
-		// create a USMap object with the map data
-		USMap us_maps = new USMap(map_data);
+		if (index != -1) {
+			// remove statewide county from countyData
+			statewideCounty = countyData.get(index);
+			countyData.remove(index);
+		}
+		// check if counties match
+		
+		// visualize counties
+		for (int i = 0; i < counties.size(); i++) {
+			// data 
+			County county = countyData.get(i);
+			if (county.foodInsecurity == null) {
+				county.toString();
+				System.out.println("\n!!! Skipping " + county.countyName);
+				continue;
+			}
+			// System.out.println(county.toString());
+			double stat = county.foodInsecurity; 
+			int colorValue = (int) (255 - (stat * 255 / 100));
 
+			// map
+			USCounty c = counties.get(i);
+			c.setFillColor(new Color(colorValue, colorValue, colorValue));
+			c.setStrokeColor(new Color(colorValue, colorValue, colorValue));
+			// c.setGeoId(county.countyName);
+		}
+
+		System.out.println(statewideCounty.toString());
+		USMap us_maps = new USMap(map_data);
 		bridges.setDataStructure(us_maps);
 		bridges.visualize();
 	}
 
-	public static List<County> getNCountyData(){
-		String file = "ncData.csv";
+	public static List<County> dataFetcher(){
+		String file = "src/ncData.csv";
         String line;
-		List<County> countyList = new ArrayList<>();
+		List<County> countyData = new ArrayList<>();
 		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 			while ((line = br.readLine()) != null) {
 				if (line.startsWith("Unnamed") || line.startsWith("Demographics")) continue;
 
 				String[] values = line.split(",");
 				if (values.length < 31) {
-					System.err.println("Skipping line due to insufficient data: " + line);
+					// System.err.println("Skipping line due to insufficient data: " + line);
 					continue;
 				}
 
@@ -99,13 +131,14 @@ public class NCmap {
 					parseDoubleOrNull(values[29]), // presentUseValuation
 					parseDoubleOrNull(values[30])  // localOptionSalesTaxes
 				);
-				countyList.add(nexCounty);
+				countyData.add(nexCounty);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return countyList;
+		return countyData;
 	}
+
 	public static class County {
 		String countyName;
 		Integer population;
@@ -182,12 +215,46 @@ public class NCmap {
 			this.presentUseValuation = presentUseValuation;
 			this.localOptionSalesTaxes = localOptionSalesTaxes;
 		}
+
+		public String toString() {
+			return "'" + countyName + '\'' +
+					": population=" + population +
+					", populationChangeSince2014=" + populationChangeSince2014 +
+					", medianAge=" + medianAge +
+					", populationUnderAge18=" + populationUnderAge18 +
+					", populationAged65Plus=" + populationAged65Plus +
+					", veteranPopulation=" + veteranPopulation +
+					", agriculturalLand=" + agriculturalLand +
+					", numberOfFarms=" + numberOfFarms +
+					", broadbandInternetAccess=" + broadbandInternetAccess +
+					", computingDeviceAccess=" + computingDeviceAccess +
+					", childrenInPoverty=" + childrenInPoverty +
+					", averageWeeklyWage=" + averageWeeklyWage +
+					", perCapitaIncome=" + perCapitaIncome +
+					", grossDomesticProduct=" + grossDomesticProduct +
+					", ncPreKEnrollment=" + ncPreKEnrollment +
+					", k12CurrentExpenseFunding=" + k12CurrentExpenseFunding +
+					", opportunityYouth=" + opportunityYouth +
+					", adultsWithoutHighSchoolDiploma=" + adultsWithoutHighSchoolDiploma +
+					", educationalAttainment=" + educationalAttainment +
+					", foodInsecurity=" + foodInsecurity +
+					", traditionalMedicaidEnrollment=" + traditionalMedicaidEnrollment +
+					", medicaidExpansionEnrollment=" + medicaidExpansionEnrollment +
+					", uninsuredResidents=" + uninsuredResidents +
+					", emergencyDeptVisitsForDrugOverdose=" + emergencyDeptVisitsForDrugOverdose +
+					", overdoseDeaths=" + overdoseDeaths +
+					", propertyTaxRates=" + propertyTaxRates +
+					", propertyTaxLevy=" + propertyTaxLevy +
+					", taxablePropertyValuation=" + taxablePropertyValuation +
+					", presentUseValuation=" + presentUseValuation +
+					", localOptionSalesTaxes=" + localOptionSalesTaxes +
+				'}';
+		}
 	}
 
 	public static Integer parseIntegerOrNull(String s) {
 		try {
 			if (s == null || s.trim().isEmpty()) return null;
-			// parse as double then cast to int (to handle decimals in int fields)
 			return (int) Double.parseDouble(s.trim());
 		} catch (NumberFormatException e) {
 			return null;
@@ -197,7 +264,6 @@ public class NCmap {
 	public static Double parseDoubleOrNull(String s) {
 		try {
 			if (s == null || s.trim().isEmpty()) return null;
-			// Replace commas with dots just in case
 			return Double.parseDouble(s.trim().replace(",", "."));
 		} catch (NumberFormatException e) {
 			return null;
