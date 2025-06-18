@@ -66,7 +66,7 @@ public class NCmap {
 
 		for (int i = 0; i < counties.size(); i++) {
 			County county = countyData.get(i);
-			Object figure = county.numberOfFarms;
+			Integer figure = county.numberOfFarms;
 			double minVal = min.numberOfFarms;
 			double maxVal = max.numberOfFarms;
 			
@@ -76,7 +76,7 @@ public class NCmap {
 			}
 
 			// Clamp and scale value to index 0–8
-			double normalizedVal = (((double) figure - minVal) / (maxVal - minVal))*8;
+			double normalizedVal = ((figure.doubleValue() - minVal) / (maxVal - minVal)) * 8;
 			int index = Math.round((long) normalizedVal);
 			System.out.println(index + "\t" + normalizedVal + "\t" + county.countyName);
 			if (index < 0) index = 0;
