@@ -1,0 +1,82 @@
+Source List,,,,,,
+Category,,Indicator,Notes,,Source (Click for Hyperlinks),
+Demographics,,County Population,"Shows the estimated population for each county in 2024, and the share of the state's population that lives in that county.",,"North Carolina State Demographer's Office. Under County/State Population Projections, download ""Data (Excel format)"" under the header ""Sex and Single Years of Age (2000-2050)."" 
+",
+Demographics,,Population Change Since 2014,Calculated by NCACC using data provided by the North Carolina State Demographer's Office.,,See County Population row. ,
+Demographics,,Median Age,"The ""median age"" for a county is the age at which half of the population is older and half of the population is younger.
+",,See County Population row. ,
+Demographics,,"Population
+Under Age 18","Calculated by NCACC by dividing the estimated number of residents age 17 or younger per county by a county's population, using 2024 population estimates.
+",,See County Population row. ,
+Demographics,,"Population
+Aged 65+","Calculated by NCACC by dividing the estimated number of residents age 65 or older per county by a county's population, using 2024 population estimates.
+",,See County Population row. ,
+Demographics,,Veteran Population,"Calculated by NCACC by dividing the estimated number of veterans in each county by the county's population, using 2024 data. Veteran data is created by the US Veterans Administration and generally excludes veterans who enlisted in the last 40 years and did not complete a minimum service requirement, typically 2 years.
+",,"Veterans data: North Carolina State Demographer's Office.
+",
+,,,,,Population data: See County Population row. ,
+Health,,Food Insecurity,None.,,"Feeding America, Mapping the Meal Gap.",
+Health,,Traditional Medicaid Enrollment,"Calculated by NCACC by dividing the number of unique Medicaid beneficiaries (called ""Medicaid eligibles"") per county by a county's population. Note that for Medicaid Expansion the denominator is adults aged 19-64; the denominator here is total county population.",,"Medicaid eligibles data: North Carolina State Demographer's Office.
+",
+,,,,,Population data: See County Population row.,
+Health,,Medicaid Expansion Enrollment,"In Session Law 2023-7, North Carolina expanded Medicaid coverage under an optional federal initiative designed to provide healthcare coverage to a broader range of low-income individuals and families. Medicaid Expansion provides coverage to adults ages 19 through 64 earning up to 138% of the Federal Poverty Level. Note that for Traditional Medicaid Enrollment, the denominator is total county population, while the denominator here is adults aged 19-64.",,Provided to NCACC by the North Carolina Department of Health and Human Services (DHHS). The most recent data on Expansion enrollment can be seen on DHHS's Medicaid Expansion Dashboard. ,
+Health,,Uninsured Residents,Calculated by NCACC by dividing the number of uninsured residents per county by a county's population.,,"Uninsured population (data field NUI) and population (data field NIPR) from the 2021 and 2020 model-based data files of the US Census Bureau Small Area Health Insurance Estimates.
+",
+Health,,Emergency Department Visits for Drug Overdose,"From North Carolina DHHS: ""In 2022, for every 1 drug overdose death there were 4 Emergency Department (ED) visits due to overdose in North Carolina. These ED visits are limited to unintentional and undetermined intent cases only and overdose of drugs and medicaments with dependency potential. As a key OSUAP metric, a goal was set to reduce the expected number of overdose ED visits by 20% by the end of 2024."" ",,"NC DHHS Opioid and Substance Use Action Plan Data Dashboard; indicator ""1) Track Progress (M2): ED Visits.""",
+Health,,Overdose Deaths,"From North Carolina DHHS: ""Overdose deaths occurring among North Carolina residents have been on the rise. This metric includes deaths involving all types of medications and drugs: opioids (commonly prescribed opioids, heroin, and synthetic narcotics like fentanyl and fentanyl-analogues), stimulants (cocaine, methamphetamine), benzodiazepines, and others. This metric includes fatal overdoses of all intents; over 90% of these deaths are unintentional. As a key OSUAP metric, a goal was set to reduce the expected number of overdose deaths by 20% by the end of 2024.""",,"NC DHHS Opioid and Substance Use Action Plan Data Dashboard; indicator ""1) Track progress (M1): Deaths.""",
+Education,,NC Pre-K Enrollment,"Rates are calculated by dividing the number of children enrolled by the estimated number of income-eligible 4 year-olds. However, other children are also eligible regardless of income in certain cases, such as children of certain military families and children with risk factors in specific categories, including developmental disability, Limited English Proficiency, educational need, or chronic health condition. Because of this, some county estimates exceed 100%.",,"myFutureNC. Download the file "" 2024 Attainment Profiles Data Summary xlsx.""",
+Education,,K-12 Current Expense Funding,"Most counties provided the amount of their appropriation for current expense to NCACC in NCACC's annual Budget and Tax Survey; counties that declined to respond are shown as null. 
+
+""ADM"" stands for ""Average Daily Membership"" and is used to represent the student population. This analysis uses M1 ADM for the 2023-24 school year.",,"Current expense data: self-reported by counties to NCACC.
+
+ADM data: North Carolina Department of Public Instruction. Download the file ""2023-2024, May 31, 2024"" under the header ""Average Daily Membership and Membership Last Day by LEA""",
+Education,,Teacher Salary Supplements,"In the past, teacher supplements were locally funded. However, S.L. 2021-180 created the Teacher Supplement Assistance Allotment, providing State funds to some LEAs to supplement teacher salaries.  ",,"Table 20, North Carolina Public Schools Statistical Profile, North Carolina Department of Public Instruction.",
+Education,,3rd Grade Reading Proficiency,None.,,"North Carolina Department of Public Instruction. Under the header ""2022-23 Reports,"" download the file ""2022-23 School Assessment and Other Indicator Data.""",
+Education,,Opportunity Youth,None.,,"myFutureNC. Download the file "" 2024 Attainment Profiles Data Summary xlsx.""
+",
+Education,,Adults Without a High School Diploma,None.,,"myFutureNC. Download the file "" 2024 Attainment Profiles Data Summary xlsx.""",
+Education,,Educational Attainment,None.,,"myFutureNC. Download the file "" 2024 Attainment Profiles Data Summary xlsx.""
+",
+"Economy
+and the Environment",,Agricultural Land,"The US Department of Agriculture conducts the Census of Agriculture every 5 years; this data represents 2022 and is the first update since the 2017 Census of Agriculture. 
+",,"US Department of Agriculture, 2022 Census of Agriculture, Volume 1, Chapter 2: County Level Data.",
+"Economy
+and the Environment",,Farms Across North Carolina,"The US Department of Agriculture conducts the Census of Agriculture every 5 years; this data represents 2022 and is the first update since the 2017 Census of Agriculture. 
+",,"US Department of Agriculture, 2022 Census of Agriculture, Volume 1, Chapter 2: County Level Data.",
+"Economy
+and the Environment",,Broadband Internet Access,"Shows the percentage of households that reported that they had any type of broadband subscription.
+
+
+",,"US Census Bureau. ""Types of Computers and Internet Subscriptions."" American Community Survey, ACS 5-Year Estimates Subject Tables, Table S2801. . Accessed on June 24, 2024.",
+"Economy
+and the Environment",,Computing Device Access,"Shows the percentage of households in each county with at least one meaningful computing device for accessing the internet, defined here as a desktop, laptop, or tablet computer.
+",,"US Census Bureau. ""Types of Computers and Internet Subscriptions."" American Community Survey, ACS 5-Year Estimates Subject Tables, Table S2801. . Accessed on June 24, 2024.",
+"Economy
+and the Environment",,Children In Poverty,"None.
+",,"US Census Bureau, Small Area Income and Poverty Estimates Program",
+"Economy
+and the Environment",,"Average
+Weekly
+Wage","This federal dataset excludes a few categories of workers, including the armed forces, self-employed workers, and private household workers. 
+
+2023 data used in this book represent preliminary annual data; the US Bureau of Labor Statistics will release final 2023 data in September, 2024.",,"US Bureau of Labor Statistics, Quarterly Census of Employment and Wages; use the ""County High-Level"" file.",
+"Economy
+and the Environment",,Per Capita Income,"A person’s income is counted in the county where they live, even if they work elsewhere.",,US Bureau of Economic Analysis,
+"Economy
+and the Environment",,"Gross
+Domestic Product",None.,,US Bureau of Economic Analysis,
+Taxation,,"Property
+Tax Rates","The North Carolina Department of Revenue provided a file of all property taxes in North Carolina for FY 2024-25; NCACC determined countywide tax rates from that data. The rates include only countywide rates; for example, municipal fire taxing districts are excluded.",,Provided to NCACC by the North Carolina Department of Revenue.,
+Taxation,,Tax Levy Per Capita/ Property Tax Levy,NCACC calculated the tax levy by multiplying the countywide tax rate by the total taxable valuation for each county.,,"Valuation data: Self-reported by counties to the North Carolina Department of Revenue (NCDOR), which provided the data to NCACC.
+",
+,,,,,2023 Property Tax rates: North Carolina Department of Revenue.,
+,,,,,"
+Population data: See County Population row. 
+",
+Taxation,,Taxable Property Per Capita/ Taxable Property Valuation,NCACC calculated the taxable property per capita by dividing the total taxable property in each county by the county's population. ,,"Valuation data: Self-reported by counties to the North Carolina Department of Revenue (NCDOR), which provided the data to NCACC.
+",
+,,,,,"Population data: See County Population row. 
+",
+Taxation,,Present Use Valuation (PUV),"North Carolina's Present Use Valuation (PUV) program allows property owners to have their land assessed at a lower value based on its current use for agriculture, horticulture, or forestry, resulting in reduced property taxes and the deferment of the difference between the market value and the use value until the property is either sold or changes its use. The three categories of land that may qualify for classification: Agricultural, Forestland, and Horticultural. ",,"Valuation and deferred valuation is self-reported by counties to the North Carolina Department of Revenue (NCDOR), which provided the data to NCACC. This data can also be seen on NCDOR's annual ""County Taxable Real Property, Personal Property, and Public Service Company Valuations"" report.",
+Taxation,,Local Option Sales Taxes,"None.
+",,North Carolina Department of Revenue,

@@ -38,48 +38,61 @@ public class NCmap {
 		List<County> countyData = dataFetcher();
 
 		// alphabetize counties
-		counties.sort((c1, c2) -> c1.getCountyName().compareTo(c2.getCountyName()));
+		counties.sort((c1, c2) -> c1.getCountyName().compareTo(c2.getCountyName()));	
 		countyData.sort((c1, c2) -> c1.countyName.compareTo(c2.countyName));
-		System.out.println("Counties in North Carolina:" + counties.size());
-		System.out.println("Counties in County Data:" + countyData.size());
-		// check if counties match
-		// binary search for statewide county
-		int index = -1;
-		County statewideCounty = null; 
+		System.out.println("Counties in North Carolina: " + counties.size());
+		System.out.println("Counties in County Data: " + countyData.size());
+
+		// extract average and total counties from county data
+		County min = null; 
+		County max = null; 
 		for (int i = 0; i < countyData.size(); i++) {
-			if (countyData.get(i).countyName.equals("Statewide")) {
-				index = i;
-				break;
+			if (countyData.get(i).countyName.equals("Min")) {
+				min = countyData.get(i);
+				countyData.remove(i);
+				continue;
+			}
+			if (countyData.get(i).countyName.equals("Max")) {
+				max = countyData.get(i);
+				countyData.remove(i);
+				continue;
 			}
 		}
-		if (index != -1) {
-			// remove statewide county from countyData
-			statewideCounty = countyData.get(index);
-			countyData.remove(index);
-		}
-		// check if counties match
 		
-		// visualize counties
+		String[] redScale = {
+			"#fff5f0", "#fee0d2", "#fcbba1", "#fc9272", "#fb6a4a",
+			"#ef3b2c", "#cb181d", "#a50f15", "#67000d"
+		};
+
 		for (int i = 0; i < counties.size(); i++) {
-			// data 
 			County county = countyData.get(i);
-			Object figure = county.populationPercentOfState;
+			Object figure = county.numberOfFarms;
+			double minVal = min.numberOfFarms;
+			double maxVal = max.numberOfFarms;
+			
 			if (figure == null) {
-				county.toString();
 				System.out.println("\n!!! Skipping " + county.countyName);
 				continue;
 			}
-			System.out.print(county.countyName + " ");
-			double stat = (double) figure; 
-			int colorValue = (int) (255-255*stat*10);
-			if (colorValue > 255) colorValue = 255;
-			if (colorValue < 0) colorValue = 0;			
-			System.out.println("stat "+ stat);
-			System.out.println("\tColor:\t255, " + colorValue + ", " + colorValue);
+
+			// Clamp and scale value to index 0–8
+			double normalizedVal = (((double) figure - minVal) / (maxVal - minVal))*8;
+			int index = Math.round((long) normalizedVal);
+			System.out.println(index + "\t" + normalizedVal + "\t" + county.countyName);
+			if (index < 0) index = 0;
+			if (index > 8) index = 8;
+
+			String hex = redScale[index];
+
+			// Convert hex to RGB
+			int r = Integer.valueOf(hex.substring(1, 3), 16);
+			int g = Integer.valueOf(hex.substring(3, 5), 16);
+			int b = Integer.valueOf(hex.substring(5, 7), 16);
+			// System.out.println(index + " " + r + ", " + g + ", " + b + "\t" + county.countyName);
 
 			// map
 			USCounty c = counties.get(i);
-			c.setFillColor(new Color(255, colorValue, colorValue));
+			c.setFillColor(new Color(r, g, b));
 			c.setStrokeColor(new Color(0, 0, 0));
 		}
 		USMap us_maps = new USMap(map_data);
@@ -88,7 +101,7 @@ public class NCmap {
 	}
 
 	public static List<County> dataFetcher(){
-		String file = "src/ncData.csv";
+		String file = "src/processedData.csv";
         String line;
 		List<County> countyData = new ArrayList<>();
 		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
@@ -218,7 +231,8 @@ public class NCmap {
 					parseIntegerOrNull(values[114]), // realPropertyValuationDeferredRank
 					parseDoubleOrNull(values[115]), // realPropertyValuationDeferredTotal
 					parseIntegerOrNull(values[116]), // realPropertyValuationDeferredTotalRank
-					parseDoubleOrNull(values[117]) // localSalesTaxRate
+					parseDoubleOrNull(values[117]), // localSalesTaxRate
+					parseDoubleOrNull(values[118]) // areaSquareMiles
 				);
 				countyData.add(nexCounty);
 			}
@@ -374,6 +388,7 @@ public class NCmap {
 		Integer realPropertyValuationDeferredTotalRank;
 
 		Double localSalesTaxRate;
+		Double areaSquareMiles;
 
 		public County(
 				String countyName,
@@ -493,7 +508,8 @@ public class NCmap {
 				Integer realPropertyValuationDeferredRank,
 				Double realPropertyValuationDeferredTotal,
 				Integer realPropertyValuationDeferredTotalRank,
-				Double localSalesTaxRate){
+				Double localSalesTaxRate,
+				Double areaSquareMiles){
 		
 			this.countyName = countyName;
 			this.population = population;
@@ -613,6 +629,7 @@ public class NCmap {
 			this.realPropertyValuationDeferredTotal = realPropertyValuationDeferredTotal;
 			this.realPropertyValuationDeferredTotalRank = realPropertyValuationDeferredTotalRank;
 			this.localSalesTaxRate = localSalesTaxRate;
+			this.areaSquareMiles = areaSquareMiles;
 		}
 	}
 
