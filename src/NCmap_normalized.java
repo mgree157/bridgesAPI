@@ -20,44 +20,26 @@ import java.util.List;
 public class NCmap_normalized {
 	public static void main(String[] args) throws Exception {
 
-		Bridges bridges = new Bridges(2001, "mgree157", "581575557990");
+		Bridges bridges = new Bridges(2002, "mgree157", "581575557990");
 		DataSource ds = bridges.getDataSource();
-		// set title, description, and author
-		bridges.setTitle("North Carolina Map Visualization");
-		// get NC map data
+		bridges.setTitle("Normalized North Carolina Map Visualization");
+
+		// get bridges NC map structure
 		String[] states = {"North Carolina"};
 		ArrayList<USState> map_data = ds.getUSMapCountyData(states, true);
 		USState nc = map_data.get(0);
-		// get counties from NC map
+
+		// get counties from bridges NC map
 		List<USCounty> counties = new ArrayList<>();
 		for (Map.Entry<String,USCounty> e: nc.getCounties().entrySet()) {
 			USCounty c = e.getValue();
 			counties.add(c);
 		}
-		// get county data from csv
+		// get NORAMLIZED county data from csv
 		List<County> countyData = dataFetcher();
 
-		// alphabetize counties
-		counties.sort((c1, c2) -> c1.getCountyName().compareTo(c2.getCountyName()));	
-		countyData.sort((c1, c2) -> c1.countyName.compareTo(c2.countyName));
-		System.out.println("Counties in North Carolina: " + counties.size());
-		System.out.println("Counties in County Data: " + countyData.size());
-
-		// extract average and total counties from county data
-		County min = null; 
-		County max = null; 
-		for (int i = 0; i < countyData.size(); i++) {
-			if (countyData.get(i).countyName.equals("Min")) {
-				min = countyData.get(i);
-				countyData.remove(i);
-				continue;
-			}
-			if (countyData.get(i).countyName.equals("Max")) {
-				max = countyData.get(i);
-				countyData.remove(i);
-				continue;
-			}
-		}
+		// align counties from bridges and county data by alphabetizing both lists
+        alignCounties(counties, countyData);
 		
 		String[] redScale = {
 			"#fff5f0", "#fee0d2", "#fcbba1", "#fc9272", "#fb6a4a",
@@ -66,7 +48,7 @@ public class NCmap_normalized {
 
 		for (int i = 0; i < counties.size(); i++) {
 			County county = countyData.get(i);
-			Number figure = county.adultsWithoutHSDiplomaPercent;
+			Number figure = county.populationRank;
 			// double minVal = min.numberOfFarms;
 			// double maxVal = max.numberOfFarms;
 			if (figure == null) {
@@ -99,6 +81,30 @@ public class NCmap_normalized {
 		bridges.visualize();
 	}
 
+    public static void alignCounties(List<USCounty> counties, List<County> countyData) {
+        // alphabetize counties
+		counties.sort((c1, c2) -> c1.getCountyName().compareTo(c2.getCountyName()));	
+		countyData.sort((c1, c2) -> c1.countyName.compareTo(c2.countyName));
+		System.out.println("Counties in North Carolina: " + counties.size());
+		System.out.println("Counties in County Data: " + countyData.size());
+
+		// extract average and total counties from county data
+		County min = null; 
+		County max = null; 
+		for (int i = 0; i < countyData.size(); i++) {
+			if (countyData.get(i).countyName.equals("Min")) {
+				min = countyData.get(i);
+				countyData.remove(i);
+				continue;
+			}
+			if (countyData.get(i).countyName.equals("Max")) {
+				max = countyData.get(i);
+				countyData.remove(i);
+				continue;
+			}   
+		}
+        return;
+    }
 	public static List<County> dataFetcher(){
 		String file = "src/normalizedData.csv";
         String line;
@@ -115,121 +121,121 @@ public class NCmap_normalized {
 				County nexCounty = new County(
 					values[0], // countyName
 					parseDoubleOrNull(values[1]), // population
-					parseIntegerOrNull(values[2]), // populationRank
+					parseDoubleOrNull(values[2]), // populationRank
 					parseDoubleOrNull(values[3]), // populationPercentOfState
-					parseIntegerOrNull(values[4]), // populationPercentOfStateRank
+					parseDoubleOrNull(values[4]), // populationPercentOfStateRank
 					parseDoubleOrNull(values[5]), // populationChangeSince2014
-					parseIntegerOrNull(values[6]), // populationChangeSince2014Rank
-					parseIntegerOrNull(values[7]), // populationChangeSince2014Number
-					parseIntegerOrNull(values[8]), // populationChangeSince2014NumberRank
+					parseDoubleOrNull(values[6]), // populationChangeSince2014Rank
+					parseDoubleOrNull(values[7]), // populationChangeSince2014Number
+					parseDoubleOrNull(values[8]), // populationChangeSince2014NumberRank
 					parseDoubleOrNull(values[9]), // medianAge
-					parseIntegerOrNull(values[10]), // medianAgeRank
+					parseDoubleOrNull(values[10]), // medianAgeRank
 					parseDoubleOrNull(values[11]), // medianAgeChangePercent
-					parseIntegerOrNull(values[12]), // under18ChangeRank
+					parseDoubleOrNull(values[12]), // under18ChangeRank
 					parseDoubleOrNull(values[13]), // under18Percent
-					parseIntegerOrNull(values[14]), // under18Rank
+					parseDoubleOrNull(values[14]), // under18Rank
 					parseDoubleOrNull(values[15]), // under18ChangeSince2014Percent
-					parseIntegerOrNull(values[16]), // under18ChangeSince2014Rank
+					parseDoubleOrNull(values[16]), // under18ChangeSince2014Rank
 					parseDoubleOrNull(values[17]), // over65in2024Percent
-					parseIntegerOrNull(values[18]), // over65in2024Rank
+					parseDoubleOrNull(values[18]), // over65in2024Rank
 					parseDoubleOrNull(values[19]), // over65ChangeSince2014Percent
-					parseIntegerOrNull(values[20]), // over65ChangeSince2014Rank
+					parseDoubleOrNull(values[20]), // over65ChangeSince2014Rank
 					parseDoubleOrNull(values[21]), // veteranPercent
-					parseIntegerOrNull(values[22]), // veteranRank
-					parseIntegerOrNull(values[23]), // veteranNumber
-					parseIntegerOrNull(values[24]), // veteranNumberRank
-					parseIntegerOrNull(values[25]), // agriculturalLandAcres
-					parseIntegerOrNull(values[26]), // agriculturalLandRank
+					parseDoubleOrNull(values[22]), // veteranRank
+					parseDoubleOrNull(values[23]), // veteranNumber
+					parseDoubleOrNull(values[24]), // veteranNumberRank
+					parseDoubleOrNull(values[25]), // agriculturalLandAcres
+					parseDoubleOrNull(values[26]), // agriculturalLandRank
 					parseDoubleOrNull(values[27]), // agriculturalLandChangeSince2017Percent
-					parseIntegerOrNull(values[28]), // agriculturalLandChangeSince2017Rank
-					parseIntegerOrNull(values[29]), // numberOfFarms
-					parseIntegerOrNull(values[30]), // numberOfFarmsRank
+					parseDoubleOrNull(values[28]), // agriculturalLandChangeSince2017Rank
+					parseDoubleOrNull(values[29]), // numberOfFarms
+					parseDoubleOrNull(values[30]), // numberOfFarmsRank
 					parseDoubleOrNull(values[31]), // numberOfFarmsChangeSince2017Percent
-					parseIntegerOrNull(values[32]), // numberOfFarmsChangeSince2017Rank
+					parseDoubleOrNull(values[32]), // numberOfFarmsChangeSince2017Rank
 					parseDoubleOrNull(values[33]), // broadbandInternetAccess2022Percent
-					parseIntegerOrNull(values[34]), // broadbandInternetAccessPercent2022Rank
+					parseDoubleOrNull(values[34]), // broadbandInternetAccessPercent2022Rank
 					parseDoubleOrNull(values[35]), // broadbandInternetAccess2019Percent
-					parseIntegerOrNull(values[36]), // broadbandInternetAccessPercent2019Rank
+					parseDoubleOrNull(values[36]), // broadbandInternetAccessPercent2019Rank
 					parseDoubleOrNull(values[37]), // computingDeviceAccess2022Percent
-					parseIntegerOrNull(values[38]), // computingDeviceAccess2022PercentRank
+					parseDoubleOrNull(values[38]), // computingDeviceAccess2022PercentRank
 					parseDoubleOrNull(values[39]), // computingDeviceAccess2019Percent
-					parseIntegerOrNull(values[40]), // computingDeviceAccess2019PercentRank
+					parseDoubleOrNull(values[40]), // computingDeviceAccess2019PercentRank
 					parseDoubleOrNull(values[41]), // childPovertyPercent
-					parseIntegerOrNull(values[42]), // childPovertyPercentRank
-					parseIntegerOrNull(values[43]), // childPovertyTotal
-					parseIntegerOrNull(values[44]), // childPovertyTotalRank
+					parseDoubleOrNull(values[42]), // childPovertyPercentRank
+					parseDoubleOrNull(values[43]), // childPovertyTotal
+					parseDoubleOrNull(values[44]), // childPovertyTotalRank
 					parseDoubleOrNull(values[45]), // averageWeeklyWage
-					parseIntegerOrNull(values[46]), // averageWeeklyWageRank
+					parseDoubleOrNull(values[46]), // averageWeeklyWageRank
 					parseDoubleOrNull(values[47]), // averageWeeklyWageAsPercentofStateAverage
-					parseIntegerOrNull(values[48]), // averageWeeklyWageAsPercentofStateAverageRank
+					parseDoubleOrNull(values[48]), // averageWeeklyWageAsPercentofStateAverageRank
 					parseDoubleOrNull(values[49]), // perCapitaIncome
-					parseIntegerOrNull(values[50]), // perCapitaIncomeRank
+					parseDoubleOrNull(values[50]), // perCapitaIncomeRank
 					parseDoubleOrNull(values[51]), // perCapitaIncomeAsPercentofStatePCI
-					parseIntegerOrNull(values[52]), // perCapitaIncomeAsPercentofStatePCIRank
+					parseDoubleOrNull(values[52]), // perCapitaIncomeAsPercentofStatePCIRank
 					parseDoubleOrNull(values[53]), // gdp2022
-					parseIntegerOrNull(values[54]), // gdp2022Rank
+					parseDoubleOrNull(values[54]), // gdp2022Rank
 					parseDoubleOrNull(values[55]), // gdp2021
-					parseIntegerOrNull(values[56]), // gdp2021Rank
+					parseDoubleOrNull(values[56]), // gdp2021Rank
 					parseDoubleOrNull(values[57]), // preKEnrollment2023Percent
-					parseIntegerOrNull(values[58]), // preKEnrollment2023PercentRank
+					parseDoubleOrNull(values[58]), // preKEnrollment2023PercentRank
 					parseDoubleOrNull(values[59]), // preKEnrollment2022Percent
-					parseIntegerOrNull(values[60]), // preKEnrollment2022PercentRank
+					parseDoubleOrNull(values[60]), // preKEnrollment2022PercentRank
 					parseDoubleOrNull(values[61]), // k12FundingADM
-					parseIntegerOrNull(values[62]), // k12FundingADMRank
+					parseDoubleOrNull(values[62]), // k12FundingADMRank
 					parseDoubleOrNull(values[63]), // k12Funding
-					parseIntegerOrNull(values[64]), // k12FundingRank
+					parseDoubleOrNull(values[64]), // k12FundingRank
 					parseDoubleOrNull(values[65]), // youthOpportunity2022Percent
-					parseIntegerOrNull(values[66]), // youthOpportunity2022PercentRank
+					parseDoubleOrNull(values[66]), // youthOpportunity2022PercentRank
 					parseDoubleOrNull(values[67]), // youthOpportunity2019Percent
-					parseIntegerOrNull(values[68]), // youthOpportunity2019PercentRank
+					parseDoubleOrNull(values[68]), // youthOpportunity2019PercentRank
 					parseDoubleOrNull(values[69]), // adultsWithoutHSDiplomaPercent
-					parseIntegerOrNull(values[70]), // adultsWithoutHSDiplomaPercentRank
-					parseIntegerOrNull(values[71]), // adultsWithoutHSDiplomaTotal
-					parseIntegerOrNull(values[72]), // adultsWithoutHSDiplomaTotalRank
+					parseDoubleOrNull(values[70]), // adultsWithoutHSDiplomaPercentRank
+					parseDoubleOrNull(values[71]), // adultsWithoutHSDiplomaTotal
+					parseDoubleOrNull(values[72]), // adultsWithoutHSDiplomaTotalRank
 					parseDoubleOrNull(values[73]), // educationalAttainmentPercent
-					parseIntegerOrNull(values[74]), // educationalAttainmentPercentRank
-					parseIntegerOrNull(values[75]), // educationalAttainmentNumber
+					parseDoubleOrNull(values[74]), // educationalAttainmentPercentRank
+					parseDoubleOrNull(values[75]), // educationalAttainmentNumber
 					parseDoubleOrNull(values[76]), // educationalAttainmentGoal2030
 					parseDoubleOrNull(values[77]), // foodInsecurity2022Percent
-					parseIntegerOrNull(values[78]), // foodInsecurity2022PercentRank
+					parseDoubleOrNull(values[78]), // foodInsecurity2022PercentRank
 					parseDoubleOrNull(values[79]), // foodInsecurity2021Percent
-					parseIntegerOrNull(values[80]), // foodInsecurity2021PercentRank
+					parseDoubleOrNull(values[80]), // foodInsecurity2021PercentRank
 					parseDoubleOrNull(values[81]), // medicaidEnrollmentTraditionalPercent
-					parseIntegerOrNull(values[82]), // medicaidEnrollmentTraditionalPercentRank
-					parseIntegerOrNull(values[83]), // medicaidEnrollmentTraditionalNumber
-					parseIntegerOrNull(values[84]), // medicaidEnrollmentTraditionalNumberRank
+					parseDoubleOrNull(values[82]), // medicaidEnrollmentTraditionalPercentRank
+					parseDoubleOrNull(values[83]), // medicaidEnrollmentTraditionalNumber
+					parseDoubleOrNull(values[84]), // medicaidEnrollmentTraditionalNumberRank
 					parseDoubleOrNull(values[85]), // medicaidEnrollmentExpansionPercent
-					parseIntegerOrNull(values[86]), // medicaidEnrollmentExpansionPercentRank
-					parseIntegerOrNull(values[87]), // medicaidEnrollmentExpansionNumber
-					parseIntegerOrNull(values[88]), // medicaidEnrollmentExpansionNumberRank
+					parseDoubleOrNull(values[86]), // medicaidEnrollmentExpansionPercentRank
+					parseDoubleOrNull(values[87]), // medicaidEnrollmentExpansionNumber
+					parseDoubleOrNull(values[88]), // medicaidEnrollmentExpansionNumberRank
 					parseDoubleOrNull(values[89]), // uninsuredResidents2021Percent
-					parseIntegerOrNull(values[90]), // uninsuredResidents2021PercentRank
+					parseDoubleOrNull(values[90]), // uninsuredResidents2021PercentRank
 					parseDoubleOrNull(values[91]), // uninsuredResidents2020Percent
-					parseIntegerOrNull(values[92]), // uninsuredResidents2020PercentRank
+					parseDoubleOrNull(values[92]), // uninsuredResidents2020PercentRank
 					parseDoubleOrNull(values[93]), // drugOverdoseEmergenciesPerHundredThousand
-					parseIntegerOrNull(values[94]), // drugOverdoseEmergenciesPerHundredThousandRank
-					parseIntegerOrNull(values[95]), // drugOverdoseEmergenciesTotal
-					parseIntegerOrNull(values[96]), // drugOverdoseEmergenciesTotalRank
+					parseDoubleOrNull(values[94]), // drugOverdoseEmergenciesPerHundredThousandRank
+					parseDoubleOrNull(values[95]), // drugOverdoseEmergenciesTotal
+					parseDoubleOrNull(values[96]), // drugOverdoseEmergenciesTotalRank
 					parseDoubleOrNull(values[97]), // overDoseDeathsPerHundredThousand
-					parseIntegerOrNull(values[98]), // overDoseDeathsRank
-					parseIntegerOrNull(values[99]), // overDoseDeathsTotal
-					parseIntegerOrNull(values[100]), // overDoseDeathsTotalRank
+					parseDoubleOrNull(values[98]), // overDoseDeathsRank
+					parseDoubleOrNull(values[99]), // overDoseDeathsTotal
+					parseDoubleOrNull(values[100]), // overDoseDeathsTotalRank
 					parseDoubleOrNull(values[101]), // propertyTaxRate
-					parseIntegerOrNull(values[102]), // propertyTaxRateRank
+					parseDoubleOrNull(values[102]), // propertyTaxRateRank
 					parseDoubleOrNull(values[103]), // propertyTaxLevy
-					parseIntegerOrNull(values[104]), // propertyTaxLevyRank
+					parseDoubleOrNull(values[104]), // propertyTaxLevyRank
 					parseDoubleOrNull(values[105]), // propertyTaxLevyPerCapita
-					parseIntegerOrNull(values[106]), // propertyTaxLevyPerCapitaRank
+					parseDoubleOrNull(values[106]), // propertyTaxLevyPerCapitaRank
 					parseDoubleOrNull(values[107]), // propertyTaxLevyTotal
-					parseIntegerOrNull(values[108]), // propertyTaxLevyTotalRank
+					parseDoubleOrNull(values[108]), // propertyTaxLevyTotalRank
 					parseDoubleOrNull(values[109]), // propertyValuationPerCapita
-					parseIntegerOrNull(values[110]), // propertyValuationPerCapitaRank
+					parseDoubleOrNull(values[110]), // propertyValuationPerCapitaRank
 					parseDoubleOrNull(values[111]), // propertyValuationTotal
-					parseIntegerOrNull(values[112]), // propertyValuationTotalRank
+					parseDoubleOrNull(values[112]), // propertyValuationTotalRank
 					parseDoubleOrNull(values[113]), // realPropertyValuationDeferred
-					parseIntegerOrNull(values[114]), // realPropertyValuationDeferredRank
+					parseDoubleOrNull(values[114]), // realPropertyValuationDeferredRank
 					parseDoubleOrNull(values[115]), // realPropertyValuationDeferredTotal
-					parseIntegerOrNull(values[116]), // realPropertyValuationDeferredTotalRank
+					parseDoubleOrNull(values[116]), // realPropertyValuationDeferredTotalRank
 					parseDoubleOrNull(values[117]), // localSalesTaxRate
 					parseDoubleOrNull(values[118]) // areaSquareMiles
 				);
@@ -244,147 +250,147 @@ public class NCmap_normalized {
 	public static class County {
 		String countyName;
 		Double population;
-		Integer populationRank;
+		Double populationRank;
 		Double populationPercentOfState;
-		Integer populationPercentOfStateRank;
+		Double populationPercentOfStateRank;
 		Double populationChangeSince2014;
-		Integer populationChangeSince2014Rank;
-		Integer populationChangeSince2014Number;
-		Integer populationChangeSince2014NumberRank;
+		Double populationChangeSince2014Rank;
+		Double populationChangeSince2014Number;
+		Double populationChangeSince2014NumberRank;
 
 		Double medianAge;
-		Integer medianAgeRank;
+		Double medianAgeRank;
 		Double medianAgeChangePercent;
 
-		Integer under18ChangeRank;
+		Double under18ChangeRank;
 		Double under18Percent;
-		Integer under18Rank;
+		Double under18Rank;
 		Double under18ChangeSince2014Percent;
-		Integer under18ChangeSince2014Rank;
+		Double under18ChangeSince2014Rank;
 
 		Double over65in2024Percent;
-		Integer over65in2024Rank;
+		Double over65in2024Rank;
 		Double over65ChangeSince2014Percent;
-		Integer over65ChangeSince2014Rank;
+		Double over65ChangeSince2014Rank;
 
 		Double veteranPercent;
-		Integer veteranRank;
-		Integer veteranNumber;
-		Integer veteranNumberRank;
+		Double veteranRank;
+		Double veteranNumber;
+		Double veteranNumberRank;
 
-		Integer agriculturalLandAcres;
-		Integer agriculturalLandRank;
+		Double agriculturalLandAcres;
+		Double agriculturalLandRank;
 		Double agriculturalLandChangeSince2017Percent;
-		Integer agriculturalLandChangeSince2017Rank;
+		Double agriculturalLandChangeSince2017Rank;
 
-		Integer numberOfFarms;
-		Integer numberOfFarmsRank;
+		Double numberOfFarms;
+		Double numberOfFarmsRank;
 		Double numberOfFarmsChangeSince2017Percent;
-		Integer numberOfFarmsChangeSince2017Rank;
+		Double numberOfFarmsChangeSince2017Rank;
 
 		Double broadbandInternetAccess2022Percent;
-		Integer broadbandInternetAccessPercent2022Rank;
+		Double broadbandInternetAccessPercent2022Rank;
 		Double broadbandInternetAccess2019Percent;
-		Integer broadbandInternetAccessPercent2019Rank;
+		Double broadbandInternetAccessPercent2019Rank;
 
 		Double computingDeviceAccess2022Percent;
-		Integer computingDeviceAccess2022PercentRank;
+		Double computingDeviceAccess2022PercentRank;
 		Double computingDeviceAccess2019Percent;
-		Integer computingDeviceAccess2019PercentRank;
+		Double computingDeviceAccess2019PercentRank;
 
 		Double childPovertyPercent;
-		Integer childPovertyPercentRank;
-		Integer childPovertyTotal;
-		Integer childPovertyTotalRank;
+		Double childPovertyPercentRank;
+		Double childPovertyTotal;
+		Double childPovertyTotalRank;
 
 		Double averageWeeklyWage;
-		Integer averageWeeklyWageRank;
+		Double averageWeeklyWageRank;
 		Double averageWeeklyWageAsPercentofStateAverage;
-		Integer averageWeeklyWageAsPercentofStateAverageRank;
+		Double averageWeeklyWageAsPercentofStateAverageRank;
 
 		Double perCapitaIncome;
-		Integer perCapitaIncomeRank;
+		Double perCapitaIncomeRank;
 		Double perCapitaIncomeAsPercentofStatePCI;
-		Integer perCapitaIncomeAsPercentofStatePCIRank;
+		Double perCapitaIncomeAsPercentofStatePCIRank;
 
 		Double gdp2022;
-		Integer gdp2022Rank;
+		Double gdp2022Rank;
 		Double gdp2021;
-		Integer gdp2021Rank;
+		Double gdp2021Rank;
 
 		Double preKEnrollment2023Percent;
-		Integer preKEnrollment2023PercentRank;
+		Double preKEnrollment2023PercentRank;
 		Double preKEnrollment2022Percent;
-		Integer preKEnrollment2022PercentRank;
+		Double preKEnrollment2022PercentRank;
 
 		Double k12FundingADM;
-		Integer k12FundingADMRank;
+		Double k12FundingADMRank;
 		Double k12Funding;
-		Integer k12FundingRank;
+		Double k12FundingRank;
 
 		Double youthOpportunity2022Percent;
-		Integer youthOpportunity2022PercentRank;
+		Double youthOpportunity2022PercentRank;
 		Double youthOpportunity2019Percent;
-		Integer youthOpportunity2019PercentRank;
+		Double youthOpportunity2019PercentRank;
 
 		Double adultsWithoutHSDiplomaPercent;
-		Integer adultsWithoutHSDiplomaPercentRank;
-		Integer adultsWithoutHSDiplomaTotal;
-		Integer adultsWithoutHSDiplomaTotalRank;
+		Double adultsWithoutHSDiplomaPercentRank;
+		Double adultsWithoutHSDiplomaTotal;
+		Double adultsWithoutHSDiplomaTotalRank;
 
 		Double educationalAttainmentPercent;
-		Integer educationalAttainmentPercentRank;
-		Integer educationalAttainmentNumber;
+		Double educationalAttainmentPercentRank;
+		Double educationalAttainmentNumber;
 		Double educationalAttainmentGoal2030;
 
 		Double foodInsecurity2022Percent;
-		Integer foodInsecurity2022PercentRank;
+		Double foodInsecurity2022PercentRank;
 		Double foodInsecurity2021Percent;
-		Integer foodInsecurity2021PercentRank;
+		Double foodInsecurity2021PercentRank;
 
 		Double medicaidEnrollmentTraditionalPercent;
-		Integer medicaidEnrollmentTraditionalPercentRank;
-		Integer medicaidEnrollmentTraditionalNumber;
-		Integer medicaidEnrollmentTraditionalNumberRank;
+		Double medicaidEnrollmentTraditionalPercentRank;
+		Double medicaidEnrollmentTraditionalNumber;
+		Double medicaidEnrollmentTraditionalNumberRank;
 
 		Double medicaidEnrollmentExpansionPercent;
-		Integer medicaidEnrollmentExpansionPercentRank;
-		Integer medicaidEnrollmentExpansionNumber;
-		Integer medicaidEnrollmentExpansionNumberRank;
+		Double medicaidEnrollmentExpansionPercentRank;
+		Double medicaidEnrollmentExpansionNumber;
+		Double medicaidEnrollmentExpansionNumberRank;
 
 		Double uninsuredResidents2021Percent;
-		Integer uninsuredResidents2021PercentRank;
+		Double uninsuredResidents2021PercentRank;
 		Double uninsuredResidents2020Percent;
-		Integer uninsuredResidents2020PercentRank;
+		Double uninsuredResidents2020PercentRank;
 
 		Double drugOverdoseEmergenciesPerHundredThousand;
-		Integer drugOverdoseEmergenciesPerHundredThousandRank;
-		Integer drugOverdoseEmergenciesTotal;
-		Integer drugOverdoseEmergenciesTotalRank;
+		Double drugOverdoseEmergenciesPerHundredThousandRank;
+		Double drugOverdoseEmergenciesTotal;
+		Double drugOverdoseEmergenciesTotalRank;
 
 		Double overDoseDeathsPerHundredThousand;
-		Integer overDoseDeathsRank;
-		Integer overDoseDeathsTotal;
-		Integer overDoseDeathsTotalRank;
+		Double overDoseDeathsRank;
+		Double overDoseDeathsTotal;
+		Double overDoseDeathsTotalRank;
 
 		Double propertyTaxRate;
-		Integer propertyTaxRateRank;
+		Double propertyTaxRateRank;
 		Double propertyTaxLevy;
-		Integer propertyTaxLevyRank;
+		Double propertyTaxLevyRank;
 		Double propertyTaxLevyPerCapita;
-		Integer propertyTaxLevyPerCapitaRank;
+		Double propertyTaxLevyPerCapitaRank;
 		Double propertyTaxLevyTotal;
-		Integer propertyTaxLevyTotalRank;
+		Double propertyTaxLevyTotalRank;
 
 		Double propertyValuationPerCapita;
-		Integer propertyValuationPerCapitaRank;
+		Double propertyValuationPerCapitaRank;
 		Double propertyValuationTotal;
-		Integer propertyValuationTotalRank;
+		Double propertyValuationTotalRank;
 
 		Double realPropertyValuationDeferred;
-		Integer realPropertyValuationDeferredRank;
+		Double realPropertyValuationDeferredRank;
 		Double realPropertyValuationDeferredTotal;
-		Integer realPropertyValuationDeferredTotalRank;
+		Double realPropertyValuationDeferredTotalRank;
 
 		Double localSalesTaxRate;
 		Double areaSquareMiles;
@@ -392,121 +398,121 @@ public class NCmap_normalized {
 		public County(
 				String countyName,
 				Double population,
-				Integer populationRank,
+				Double populationRank,
 				Double populationPercentOfState,
-				Integer populationPercentOfStateRank,
+				Double populationPercentOfStateRank,
 				Double populationChangeSince2014,
-				Integer populationChangeSince2014Rank,
-				Integer populationChangeSince2014Number,
-				Integer populationChangeSince2014NumberRank,
+				Double populationChangeSince2014Rank,
+				Double populationChangeSince2014Number,
+				Double populationChangeSince2014NumberRank,
 				Double medianAge,
-				Integer medianAgeRank,
+				Double medianAgeRank,
 				Double medianAgeChangePercent,
-				Integer under18ChangeRank,
+				Double under18ChangeRank,
 				Double under18Percent,
-				Integer under18Rank,
+				Double under18Rank,
 				Double under18ChangeSince2014Percent,
-				Integer under18ChangeSince2014Rank,
+				Double under18ChangeSince2014Rank,
 				Double over65in2024Percent,
-				Integer over65in2024Rank,
+				Double over65in2024Rank,
 				Double over65ChangeSince2014Percent,
-				Integer over65ChangeSince2014Rank,
+				Double over65ChangeSince2014Rank,
 				Double veteranPercent,
-				Integer veteranRank,
-				Integer veteranNumber,
-				Integer veteranNumberRank,
-				Integer agriculturalLandAcres,
-				Integer agriculturalLandRank,
+				Double veteranRank,
+				Double veteranNumber,
+				Double veteranNumberRank,
+				Double agriculturalLandAcres,
+				Double agriculturalLandRank,
 				Double agriculturalLandChangeSince2017Percent,
-				Integer agriculturalLandChangeSince2017Rank,
-				Integer numberOfFarms,
-				Integer numberOfFarmsRank,
+				Double agriculturalLandChangeSince2017Rank,
+				Double numberOfFarms,
+				Double numberOfFarmsRank,
 				Double numberOfFarmsChangeSince2017Percent,
-				Integer numberOfFarmsChangeSince2017Rank,
+				Double numberOfFarmsChangeSince2017Rank,
 				Double broadbandInternetAccess2022Percent,
-				Integer broadbandInternetAccessPercent2022Rank,
+				Double broadbandInternetAccessPercent2022Rank,
 				Double broadbandInternetAccess2019Percent,
-				Integer broadbandInternetAccessPercent2019Rank,
+				Double broadbandInternetAccessPercent2019Rank,
 				Double computingDeviceAccess2022Percent,
-				Integer computingDeviceAccess2022PercentRank,
+				Double computingDeviceAccess2022PercentRank,
 				Double computingDeviceAccess2019Percent,
-				Integer computingDeviceAccess2019PercentRank,
+				Double computingDeviceAccess2019PercentRank,
 				Double childPovertyPercent,
-				Integer childPovertyPercentRank,
-				Integer childPovertyTotal,
-				Integer childPovertyTotalRank,
+				Double childPovertyPercentRank,
+				Double childPovertyTotal,
+				Double childPovertyTotalRank,
 				Double averageWeeklyWage,
-				Integer averageWeeklyWageRank,
+				Double averageWeeklyWageRank,
 				Double averageWeeklyWageAsPercentofStateAverage,
-				Integer averageWeeklyWageAsPercentofStateAverageRank,
+				Double averageWeeklyWageAsPercentofStateAverageRank,
 				Double perCapitaIncome,
-				Integer perCapitaIncomeRank,
+				Double perCapitaIncomeRank,
 				Double perCapitaIncomeAsPercentofStatePCI,
-				Integer perCapitaIncomeAsPercentofStatePCIRank,
+				Double perCapitaIncomeAsPercentofStatePCIRank,
 				Double gdp2022,
-				Integer gdp2022Rank,
+				Double gdp2022Rank,
 				Double gdp2021,
-				Integer gdp2021Rank,
+				Double gdp2021Rank,
 				Double preKEnrollment2023Percent,
-				Integer preKEnrollment2023PercentRank,
+				Double preKEnrollment2023PercentRank,
 				Double preKEnrollment2022Percent,
-				Integer preKEnrollment2022PercentRank,
+				Double preKEnrollment2022PercentRank,
 				Double k12FundingADM,
-				Integer k12FundingADMRank,
+				Double k12FundingADMRank,
 				Double k12Funding,
-				Integer k12FundingRank,
+				Double k12FundingRank,
 				Double youthOpportunity2022Percent,
-				Integer youthOpportunity2022PercentRank,
+				Double youthOpportunity2022PercentRank,
 				Double youthOpportunity2019Percent,
-				Integer youthOpportunity2019PercentRank,
+				Double youthOpportunity2019PercentRank,
 				Double adultsWithoutHSDiplomaPercent,
-				Integer adultsWithoutHSDiplomaPercentRank,
-				Integer adultsWithoutHSDiplomaTotal,
-				Integer adultsWithoutHSDiplomaTotalRank,
+				Double adultsWithoutHSDiplomaPercentRank,
+				Double adultsWithoutHSDiplomaTotal,
+				Double adultsWithoutHSDiplomaTotalRank,
 				Double educationalAttainmentPercent,
-				Integer educationalAttainmentPercentRank,
-				Integer educationalAttainmentNumber,
+				Double educationalAttainmentPercentRank,
+				Double educationalAttainmentNumber,
 				Double educationalAttainmentGoal2030,
 				Double foodInsecurity2022Percent,
-				Integer foodInsecurity2022PercentRank,
+				Double foodInsecurity2022PercentRank,
 				Double foodInsecurity2021Percent,
-				Integer foodInsecurity2021PercentRank,
+				Double foodInsecurity2021PercentRank,
 				Double medicaidEnrollmentTraditionalPercent,
-				Integer medicaidEnrollmentTraditionalPercentRank,
-				Integer medicaidEnrollmentTraditionalNumber,
-				Integer medicaidEnrollmentTraditionalNumberRank,
+				Double medicaidEnrollmentTraditionalPercentRank,
+				Double medicaidEnrollmentTraditionalNumber,
+				Double medicaidEnrollmentTraditionalNumberRank,
 				Double medicaidEnrollmentExpansionPercent,
-				Integer medicaidEnrollmentExpansionPercentRank,
-				Integer medicaidEnrollmentExpansionNumber,
-				Integer medicaidEnrollmentExpansionNumberRank,
+				Double medicaidEnrollmentExpansionPercentRank,
+				Double medicaidEnrollmentExpansionNumber,
+				Double medicaidEnrollmentExpansionNumberRank,
 				Double uninsuredResidents2021Percent,
-				Integer uninsuredResidents2021PercentRank,
+				Double uninsuredResidents2021PercentRank,
 				Double uninsuredResidents2020Percent,
-				Integer uninsuredResidents2020PercentRank,
+				Double uninsuredResidents2020PercentRank,
 				Double drugOverdoseEmergenciesPerHundredThousand,
-				Integer drugOverdoseEmergenciesPerHundredThousandRank,
-				Integer drugOverdoseEmergenciesTotal,
-				Integer drugOverdoseEmergenciesTotalRank,
+				Double drugOverdoseEmergenciesPerHundredThousandRank,
+				Double drugOverdoseEmergenciesTotal,
+				Double drugOverdoseEmergenciesTotalRank,
 				Double overDoseDeathsPerHundredThousand,
-				Integer overDoseDeathsRank,
-				Integer overDoseDeathsTotal,
-				Integer overDoseDeathsTotalRank,
+				Double overDoseDeathsRank,
+				Double overDoseDeathsTotal,
+				Double overDoseDeathsTotalRank,
 				Double propertyTaxRate,
-				Integer propertyTaxRateRank,
+				Double propertyTaxRateRank,
 				Double propertyTaxLevy,
-				Integer propertyTaxLevyRank,
+				Double propertyTaxLevyRank,
 				Double propertyTaxLevyPerCapita,
-				Integer propertyTaxLevyPerCapitaRank,
+				Double propertyTaxLevyPerCapitaRank,
 				Double propertyTaxLevyTotal,
-				Integer propertyTaxLevyTotalRank,
+				Double propertyTaxLevyTotalRank,
 				Double propertyValuationPerCapita,
-				Integer propertyValuationPerCapitaRank,
+				Double propertyValuationPerCapitaRank,
 				Double propertyValuationTotal,
-				Integer propertyValuationTotalRank,
+				Double propertyValuationTotalRank,
 				Double realPropertyValuationDeferred,
-				Integer realPropertyValuationDeferredRank,
+				Double realPropertyValuationDeferredRank,
 				Double realPropertyValuationDeferredTotal,
-				Integer realPropertyValuationDeferredTotalRank,
+				Double realPropertyValuationDeferredTotalRank,
 				Double localSalesTaxRate,
 				Double areaSquareMiles){
 		
@@ -629,15 +635,6 @@ public class NCmap_normalized {
 			this.realPropertyValuationDeferredTotalRank = realPropertyValuationDeferredTotalRank;
 			this.localSalesTaxRate = localSalesTaxRate;
 			this.areaSquareMiles = areaSquareMiles;
-		}
-	}
-
-	public static Integer parseIntegerOrNull(String s) {
-		try {
-			if (s == null || s.trim().isEmpty()) return null;
-			return (int) Double.parseDouble(s.trim());
-		} catch (NumberFormatException e) {
-			return null;
 		}
 	}
 

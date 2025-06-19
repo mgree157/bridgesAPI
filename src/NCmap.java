@@ -66,21 +66,20 @@ public class NCmap {
 
 		for (int i = 0; i < counties.size(); i++) {
 			County county = countyData.get(i);
-			Integer figure = county.numberOfFarms;
+			Number figure = county.adultsWithoutHSDiplomaPercent;
 			double minVal = min.numberOfFarms;
 			double maxVal = max.numberOfFarms;
-			
 			if (figure == null) {
 				System.out.println("\n!!! Skipping " + county.countyName);
 				continue;
 			}
-
+			
 			// Clamp and scale value to index 0–8
-			double normalizedVal = ((figure.doubleValue() - minVal) / (maxVal - minVal)) * 8;
-			int index = Math.round((long) normalizedVal);
-			System.out.println(index + "\t" + normalizedVal + "\t" + county.countyName);
+			double normalizedVal = (((Double) figure - minVal) / (maxVal - minVal)) * 8;
+			int index = (int) Math.round(normalizedVal * 8);
 			if (index < 0) index = 0;
 			if (index > 8) index = 8;
+			System.out.println(index + "\t" + figure + "\t" + figure.doubleValue()* 8 + "\t" + county.countyName);
 
 			String hex = redScale[index];
 
