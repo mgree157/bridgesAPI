@@ -7,10 +7,18 @@ import bridges.data_src_dependent.USState;
 import bridges.data_src_dependent.USCounty;
 import bridges.base.USMap;
 import bridges.base.Color;
+import bridges.base.Circle;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
+import bridges.connect.Bridges;
+import bridges.connect.DataSource;
+import bridges.data_src_dependent.USState;
+import bridges.data_src_dependent.USCounty;
+import bridges.base.SLelement;
+import bridges.base.USMap;
+import bridges.base.Color;
 
 // This program illustrates how to access the data of the US map with state
 // boundaries with different colors for states and its boundaries
@@ -23,7 +31,8 @@ public class NCmap_normalized {
 		Bridges bridges = new Bridges(2002, "mgree157", "581575557990");
 		DataSource ds = bridges.getDataSource();
 		bridges.setTitle("Normalized North Carolina Map Visualization");
-
+		bridges.setMapOverlay(true);
+		
 		// get bridges NC map structure
 		String[] states = {"North Carolina"};
 		ArrayList<USState> map_data = ds.getUSMapCountyData(states, true);
@@ -45,10 +54,10 @@ public class NCmap_normalized {
 			"#fff5f0", "#fee0d2", "#fcbba1", "#fc9272", "#fb6a4a",
 			"#ef3b2c", "#cb181d", "#a50f15", "#67000d"
 		};
-
+		Number figure = null;
 		for (int i = 0; i < counties.size(); i++) {
 			County county = countyData.get(i);
-			Number figure = county.populationRank;
+			figure = county.populationRank;
 			// double minVal = min.numberOfFarms;
 			// double maxVal = max.numberOfFarms;
 			if (figure == null) {
@@ -74,11 +83,31 @@ public class NCmap_normalized {
 			// map
 			USCounty c = counties.get(i);
 			c.setFillColor(new Color(r, g, b));
-			c.setStrokeColor(new Color(0, 0, 0));
+			c.setStrokeColor(new Color(r, g, b));
 		}
 		USMap us_maps = new USMap(map_data);
-		bridges.setDataStructure(us_maps);
-		bridges.visualize();
+		// set points and labels
+		bridges.setMap(us_maps);
+        bridges.setMapOverlay(true);
+		
+        // Set up a dummy data structure (head node)
+        SLelement<String> head = new SLelement<>("root", "root");
+
+        // Add each county as a sibling node to the head
+        SLelement<String> current = head;
+        for (County county : countyData) {
+            SLelement<String> node = new SLelement<>(county.countyName + " (" + figure + ")", county.countyName);
+            node.setLocation(county.longitude, county.latitude);
+            node.setColor(new Color(0,0,0)); 
+            node.setSize(1.0); 
+            current.setNext(node);
+            current = node;
+        }
+
+        // Set the data structure and visualize
+		
+        bridges.setDataStructure(head.getNext());
+        bridges.visualize();
 	}
 
     public static void alignCounties(List<USCounty> counties, List<County> countyData) {
@@ -106,7 +135,7 @@ public class NCmap_normalized {
         return;
     }
 	public static List<County> dataFetcher(){
-		String file = "src/normalizedData.csv";
+		String file = "src/Counties/Normalized-Table 1.csv";
         String line;
 		List<County> countyData = new ArrayList<>();
 		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
@@ -114,130 +143,133 @@ public class NCmap_normalized {
 				if (line.startsWith("Unnamed") || line.startsWith("Demographics")) continue;
 
 				String[] values = line.split(",");
-				if (values.length < 31) {
+				if (values.length < 120) {
 					// System.err.println("Skipping line due to insufficient data: " + line);
 					continue;
 				}
+
 				County nexCounty = new County(
 					values[0], // countyName
-					parseDoubleOrNull(values[1]), // population
-					parseDoubleOrNull(values[2]), // populationRank
-					parseDoubleOrNull(values[3]), // populationPercentOfState
-					parseDoubleOrNull(values[4]), // populationPercentOfStateRank
-					parseDoubleOrNull(values[5]), // populationChangeSince2014
-					parseDoubleOrNull(values[6]), // populationChangeSince2014Rank
-					parseDoubleOrNull(values[7]), // populationChangeSince2014Number
-					parseDoubleOrNull(values[8]), // populationChangeSince2014NumberRank
-					parseDoubleOrNull(values[9]), // medianAge
-					parseDoubleOrNull(values[10]), // medianAgeRank
-					parseDoubleOrNull(values[11]), // medianAgeChangePercent
-					parseDoubleOrNull(values[12]), // under18ChangeRank
-					parseDoubleOrNull(values[13]), // under18Percent
-					parseDoubleOrNull(values[14]), // under18Rank
-					parseDoubleOrNull(values[15]), // under18ChangeSince2014Percent
-					parseDoubleOrNull(values[16]), // under18ChangeSince2014Rank
-					parseDoubleOrNull(values[17]), // over65in2024Percent
-					parseDoubleOrNull(values[18]), // over65in2024Rank
-					parseDoubleOrNull(values[19]), // over65ChangeSince2014Percent
-					parseDoubleOrNull(values[20]), // over65ChangeSince2014Rank
-					parseDoubleOrNull(values[21]), // veteranPercent
-					parseDoubleOrNull(values[22]), // veteranRank
-					parseDoubleOrNull(values[23]), // veteranNumber
-					parseDoubleOrNull(values[24]), // veteranNumberRank
-					parseDoubleOrNull(values[25]), // agriculturalLandAcres
-					parseDoubleOrNull(values[26]), // agriculturalLandRank
-					parseDoubleOrNull(values[27]), // agriculturalLandChangeSince2017Percent
-					parseDoubleOrNull(values[28]), // agriculturalLandChangeSince2017Rank
-					parseDoubleOrNull(values[29]), // numberOfFarms
-					parseDoubleOrNull(values[30]), // numberOfFarmsRank
-					parseDoubleOrNull(values[31]), // numberOfFarmsChangeSince2017Percent
-					parseDoubleOrNull(values[32]), // numberOfFarmsChangeSince2017Rank
-					parseDoubleOrNull(values[33]), // broadbandInternetAccess2022Percent
-					parseDoubleOrNull(values[34]), // broadbandInternetAccessPercent2022Rank
-					parseDoubleOrNull(values[35]), // broadbandInternetAccess2019Percent
-					parseDoubleOrNull(values[36]), // broadbandInternetAccessPercent2019Rank
-					parseDoubleOrNull(values[37]), // computingDeviceAccess2022Percent
-					parseDoubleOrNull(values[38]), // computingDeviceAccess2022PercentRank
-					parseDoubleOrNull(values[39]), // computingDeviceAccess2019Percent
-					parseDoubleOrNull(values[40]), // computingDeviceAccess2019PercentRank
-					parseDoubleOrNull(values[41]), // childPovertyPercent
-					parseDoubleOrNull(values[42]), // childPovertyPercentRank
-					parseDoubleOrNull(values[43]), // childPovertyTotal
-					parseDoubleOrNull(values[44]), // childPovertyTotalRank
-					parseDoubleOrNull(values[45]), // averageWeeklyWage
-					parseDoubleOrNull(values[46]), // averageWeeklyWageRank
-					parseDoubleOrNull(values[47]), // averageWeeklyWageAsPercentofStateAverage
-					parseDoubleOrNull(values[48]), // averageWeeklyWageAsPercentofStateAverageRank
-					parseDoubleOrNull(values[49]), // perCapitaIncome
-					parseDoubleOrNull(values[50]), // perCapitaIncomeRank
-					parseDoubleOrNull(values[51]), // perCapitaIncomeAsPercentofStatePCI
-					parseDoubleOrNull(values[52]), // perCapitaIncomeAsPercentofStatePCIRank
-					parseDoubleOrNull(values[53]), // gdp2022
-					parseDoubleOrNull(values[54]), // gdp2022Rank
-					parseDoubleOrNull(values[55]), // gdp2021
-					parseDoubleOrNull(values[56]), // gdp2021Rank
-					parseDoubleOrNull(values[57]), // preKEnrollment2023Percent
-					parseDoubleOrNull(values[58]), // preKEnrollment2023PercentRank
-					parseDoubleOrNull(values[59]), // preKEnrollment2022Percent
-					parseDoubleOrNull(values[60]), // preKEnrollment2022PercentRank
-					parseDoubleOrNull(values[61]), // k12FundingADM
-					parseDoubleOrNull(values[62]), // k12FundingADMRank
-					parseDoubleOrNull(values[63]), // k12Funding
-					parseDoubleOrNull(values[64]), // k12FundingRank
-					parseDoubleOrNull(values[65]), // youthOpportunity2022Percent
-					parseDoubleOrNull(values[66]), // youthOpportunity2022PercentRank
-					parseDoubleOrNull(values[67]), // youthOpportunity2019Percent
-					parseDoubleOrNull(values[68]), // youthOpportunity2019PercentRank
-					parseDoubleOrNull(values[69]), // adultsWithoutHSDiplomaPercent
-					parseDoubleOrNull(values[70]), // adultsWithoutHSDiplomaPercentRank
-					parseDoubleOrNull(values[71]), // adultsWithoutHSDiplomaTotal
-					parseDoubleOrNull(values[72]), // adultsWithoutHSDiplomaTotalRank
-					parseDoubleOrNull(values[73]), // educationalAttainmentPercent
-					parseDoubleOrNull(values[74]), // educationalAttainmentPercentRank
-					parseDoubleOrNull(values[75]), // educationalAttainmentNumber
-					parseDoubleOrNull(values[76]), // educationalAttainmentGoal2030
-					parseDoubleOrNull(values[77]), // foodInsecurity2022Percent
-					parseDoubleOrNull(values[78]), // foodInsecurity2022PercentRank
-					parseDoubleOrNull(values[79]), // foodInsecurity2021Percent
-					parseDoubleOrNull(values[80]), // foodInsecurity2021PercentRank
-					parseDoubleOrNull(values[81]), // medicaidEnrollmentTraditionalPercent
-					parseDoubleOrNull(values[82]), // medicaidEnrollmentTraditionalPercentRank
-					parseDoubleOrNull(values[83]), // medicaidEnrollmentTraditionalNumber
-					parseDoubleOrNull(values[84]), // medicaidEnrollmentTraditionalNumberRank
-					parseDoubleOrNull(values[85]), // medicaidEnrollmentExpansionPercent
-					parseDoubleOrNull(values[86]), // medicaidEnrollmentExpansionPercentRank
-					parseDoubleOrNull(values[87]), // medicaidEnrollmentExpansionNumber
-					parseDoubleOrNull(values[88]), // medicaidEnrollmentExpansionNumberRank
-					parseDoubleOrNull(values[89]), // uninsuredResidents2021Percent
-					parseDoubleOrNull(values[90]), // uninsuredResidents2021PercentRank
-					parseDoubleOrNull(values[91]), // uninsuredResidents2020Percent
-					parseDoubleOrNull(values[92]), // uninsuredResidents2020PercentRank
-					parseDoubleOrNull(values[93]), // drugOverdoseEmergenciesPerHundredThousand
-					parseDoubleOrNull(values[94]), // drugOverdoseEmergenciesPerHundredThousandRank
-					parseDoubleOrNull(values[95]), // drugOverdoseEmergenciesTotal
-					parseDoubleOrNull(values[96]), // drugOverdoseEmergenciesTotalRank
-					parseDoubleOrNull(values[97]), // overDoseDeathsPerHundredThousand
-					parseDoubleOrNull(values[98]), // overDoseDeathsRank
-					parseDoubleOrNull(values[99]), // overDoseDeathsTotal
-					parseDoubleOrNull(values[100]), // overDoseDeathsTotalRank
-					parseDoubleOrNull(values[101]), // propertyTaxRate
-					parseDoubleOrNull(values[102]), // propertyTaxRateRank
-					parseDoubleOrNull(values[103]), // propertyTaxLevy
-					parseDoubleOrNull(values[104]), // propertyTaxLevyRank
-					parseDoubleOrNull(values[105]), // propertyTaxLevyPerCapita
-					parseDoubleOrNull(values[106]), // propertyTaxLevyPerCapitaRank
-					parseDoubleOrNull(values[107]), // propertyTaxLevyTotal
-					parseDoubleOrNull(values[108]), // propertyTaxLevyTotalRank
-					parseDoubleOrNull(values[109]), // propertyValuationPerCapita
-					parseDoubleOrNull(values[110]), // propertyValuationPerCapitaRank
-					parseDoubleOrNull(values[111]), // propertyValuationTotal
-					parseDoubleOrNull(values[112]), // propertyValuationTotalRank
-					parseDoubleOrNull(values[113]), // realPropertyValuationDeferred
-					parseDoubleOrNull(values[114]), // realPropertyValuationDeferredRank
-					parseDoubleOrNull(values[115]), // realPropertyValuationDeferredTotal
-					parseDoubleOrNull(values[116]), // realPropertyValuationDeferredTotalRank
-					parseDoubleOrNull(values[117]), // localSalesTaxRate
-					parseDoubleOrNull(values[118]) // areaSquareMiles
+					County.parseDoubleOrNull(values[1]), // population
+					County.parseDoubleOrNull(values[2]), // populationRank
+					County.parseDoubleOrNull(values[3]), // populationPercentOfState
+					County.parseDoubleOrNull(values[4]), // populationPercentOfStateRank
+					County.parseDoubleOrNull(values[5]), // populationChangeSince2014
+					County.parseDoubleOrNull(values[6]), // populationChangeSince2014Rank
+					County.parseDoubleOrNull(values[7]), // populationChangeSince2014Number
+					County.parseDoubleOrNull(values[8]), // populationChangeSince2014NumberRank
+					County.parseDoubleOrNull(values[9]), // medianAge
+					County.parseDoubleOrNull(values[10]), // medianAgeRank
+					County.parseDoubleOrNull(values[11]), // medianAgeChangePercent
+					County.parseDoubleOrNull(values[12]), // under18ChangeRank
+					County.parseDoubleOrNull(values[13]), // under18Percent
+					County.parseDoubleOrNull(values[14]), // under18Rank
+					County.parseDoubleOrNull(values[15]), // under18ChangeSince2014Percent
+					County.parseDoubleOrNull(values[16]), // under18ChangeSince2014Rank
+					County.parseDoubleOrNull(values[17]), // over65in2024Percent
+					County.parseDoubleOrNull(values[18]), // over65in2024Rank
+					County.parseDoubleOrNull(values[19]), // over65ChangeSince2014Percent
+					County.parseDoubleOrNull(values[20]), // over65ChangeSince2014Rank
+					County.parseDoubleOrNull(values[21]), // veteranPercent
+					County.parseDoubleOrNull(values[22]), // veteranRank
+					County.parseDoubleOrNull(values[23]), // veteranNumber
+					County.parseDoubleOrNull(values[24]), // veteranNumberRank
+					County.parseDoubleOrNull(values[25]), // agriculturalLandAcres
+					County.parseDoubleOrNull(values[26]), // agriculturalLandRank
+					County.parseDoubleOrNull(values[27]), // agriculturalLandChangeSince2017Percent
+					County.parseDoubleOrNull(values[28]), // agriculturalLandChangeSince2017Rank
+					County.parseDoubleOrNull(values[29]), // numberOfFarms
+					County.parseDoubleOrNull(values[30]), // numberOfFarmsRank
+					County.parseDoubleOrNull(values[31]), // numberOfFarmsChangeSince2017Percent
+					County.parseDoubleOrNull(values[32]), // numberOfFarmsChangeSince2017Rank
+					County.parseDoubleOrNull(values[33]), // broadbandInternetAccess2022Percent
+					County.parseDoubleOrNull(values[34]), // broadbandInternetAccessPercent2022Rank
+					County.parseDoubleOrNull(values[35]), // broadbandInternetAccess2019Percent
+					County.parseDoubleOrNull(values[36]), // broadbandInternetAccessPercent2019Rank
+					County.parseDoubleOrNull(values[37]), // computingDeviceAccess2022Percent
+					County.parseDoubleOrNull(values[38]), // computingDeviceAccess2022PercentRank
+					County.parseDoubleOrNull(values[39]), // computingDeviceAccess2019Percent
+					County.parseDoubleOrNull(values[40]), // computingDeviceAccess2019PercentRank
+					County.parseDoubleOrNull(values[41]), // childPovertyPercent
+					County.parseDoubleOrNull(values[42]), // childPovertyPercentRank
+					County.parseDoubleOrNull(values[43]), // childPovertyTotal
+					County.parseDoubleOrNull(values[44]), // childPovertyTotalRank
+					County.parseDoubleOrNull(values[45]), // averageWeeklyWage
+					County.parseDoubleOrNull(values[46]), // averageWeeklyWageRank
+					County.parseDoubleOrNull(values[47]), // averageWeeklyWageAsPercentofStateAverage
+					County.parseDoubleOrNull(values[48]), // averageWeeklyWageAsPercentofStateAverageRank
+					County.parseDoubleOrNull(values[49]), // perCapitaIncome
+					County.parseDoubleOrNull(values[50]), // perCapitaIncomeRank
+					County.parseDoubleOrNull(values[51]), // perCapitaIncomeAsPercentofStatePCI
+					County.parseDoubleOrNull(values[52]), // perCapitaIncomeAsPercentofStatePCIRank
+					County.parseDoubleOrNull(values[53]), // gdp2022
+					County.parseDoubleOrNull(values[54]), // gdp2022Rank
+					County.parseDoubleOrNull(values[55]), // gdp2021
+					County.parseDoubleOrNull(values[56]), // gdp2021Rank
+					County.parseDoubleOrNull(values[57]), // preKEnrollment2023Percent
+					County.parseDoubleOrNull(values[58]), // preKEnrollment2023PercentRank
+					County.parseDoubleOrNull(values[59]), // preKEnrollment2022Percent
+					County.parseDoubleOrNull(values[60]), // preKEnrollment2022PercentRank
+					County.parseDoubleOrNull(values[61]), // k12FundingADM
+					County.parseDoubleOrNull(values[62]), // k12FundingADMRank
+					County.parseDoubleOrNull(values[63]), // k12Funding
+					County.parseDoubleOrNull(values[64]), // k12FundingRank
+					County.parseDoubleOrNull(values[65]), // youthOpportunity2022Percent
+					County.parseDoubleOrNull(values[66]), // youthOpportunity2022PercentRank
+					County.parseDoubleOrNull(values[67]), // youthOpportunity2019Percent
+					County.parseDoubleOrNull(values[68]), // youthOpportunity2019PercentRank
+					County.parseDoubleOrNull(values[69]), // adultsWithoutHSDiplomaPercent
+					County.parseDoubleOrNull(values[70]), // adultsWithoutHSDiplomaPercentRank
+					County.parseDoubleOrNull(values[71]), // adultsWithoutHSDiplomaTotal
+					County.parseDoubleOrNull(values[72]), // adultsWithoutHSDiplomaTotalRank
+					County.parseDoubleOrNull(values[73]), // educationalAttainmentPercent
+					County.parseDoubleOrNull(values[74]), // educationalAttainmentPercentRank
+					County.parseDoubleOrNull(values[75]), // educationalAttainmentNumber
+					County.parseDoubleOrNull(values[76]), // educationalAttainmentGoal2030
+					County.parseDoubleOrNull(values[77]), // foodInsecurity2022Percent
+					County.parseDoubleOrNull(values[78]), // foodInsecurity2022PercentRank
+					County.parseDoubleOrNull(values[79]), // foodInsecurity2021Percent
+					County.parseDoubleOrNull(values[80]), // foodInsecurity2021PercentRank
+					County.parseDoubleOrNull(values[81]), // medicaidEnrollmentTraditionalPercent
+					County.parseDoubleOrNull(values[82]), // medicaidEnrollmentTraditionalPercentRank
+					County.parseDoubleOrNull(values[83]), // medicaidEnrollmentTraditionalNumber
+					County.parseDoubleOrNull(values[84]), // medicaidEnrollmentTraditionalNumberRank
+					County.parseDoubleOrNull(values[85]), // medicaidEnrollmentExpansionPercent
+					County.parseDoubleOrNull(values[86]), // medicaidEnrollmentExpansionPercentRank
+					County.parseDoubleOrNull(values[87]), // medicaidEnrollmentExpansionNumber
+					County.parseDoubleOrNull(values[88]), // medicaidEnrollmentExpansionNumberRank
+					County.parseDoubleOrNull(values[89]), // uninsuredResidents2021Percent
+					County.parseDoubleOrNull(values[90]), // uninsuredResidents2021PercentRank
+					County.parseDoubleOrNull(values[91]), // uninsuredResidents2020Percent
+					County.parseDoubleOrNull(values[92]), // uninsuredResidents2020PercentRank
+					County.parseDoubleOrNull(values[93]), // drugOverdoseEmergenciesPerHundredThousand
+					County.parseDoubleOrNull(values[94]), // drugOverdoseEmergenciesPerHundredThousandRank
+					County.parseDoubleOrNull(values[95]), // drugOverdoseEmergenciesTotal
+					County.parseDoubleOrNull(values[96]), // drugOverdoseEmergenciesTotalRank
+					County.parseDoubleOrNull(values[97]), // overDoseDeathsPerHundredThousand
+					County.parseDoubleOrNull(values[98]), // overDoseDeathsRank
+					County.parseDoubleOrNull(values[99]), // overDoseDeathsTotal
+					County.parseDoubleOrNull(values[100]), // overDoseDeathsTotalRank
+					County.parseDoubleOrNull(values[101]), // propertyTaxRate
+					County.parseDoubleOrNull(values[102]), // propertyTaxRateRank
+					County.parseDoubleOrNull(values[103]), // propertyTaxLevy
+					County.parseDoubleOrNull(values[104]), // propertyTaxLevyRank
+					County.parseDoubleOrNull(values[105]), // propertyTaxLevyPerCapita
+					County.parseDoubleOrNull(values[106]), // propertyTaxLevyPerCapitaRank
+					County.parseDoubleOrNull(values[107]), // propertyTaxLevyTotal
+					County.parseDoubleOrNull(values[108]), // propertyTaxLevyTotalRank
+					County.parseDoubleOrNull(values[109]), // propertyValuationPerCapita
+					County.parseDoubleOrNull(values[110]), // propertyValuationPerCapitaRank
+					County.parseDoubleOrNull(values[111]), // propertyValuationTotal
+					County.parseDoubleOrNull(values[112]), // propertyValuationTotalRank
+					County.parseDoubleOrNull(values[113]), // realPropertyValuationDeferred
+					County.parseDoubleOrNull(values[114]), // realPropertyValuationDeferredRank
+					County.parseDoubleOrNull(values[115]), // realPropertyValuationDeferredTotal
+					County.parseDoubleOrNull(values[116]), // realPropertyValuationDeferredTotalRank
+					County.parseDoubleOrNull(values[117]), // localSalesTaxRate
+					County.parseDoubleOrNull(values[118]), // areaSquareMiles
+					County.parseDoubleOrNull(values[119]), // lat
+					County.parseDoubleOrNull(values[120]) // lng
 				);
 				countyData.add(nexCounty);
 			}
@@ -395,6 +427,9 @@ public class NCmap_normalized {
 		Double localSalesTaxRate;
 		Double areaSquareMiles;
 
+		Double latitude;
+		Double longitude;
+
 		public County(
 				String countyName,
 				Double population,
@@ -514,7 +549,9 @@ public class NCmap_normalized {
 				Double realPropertyValuationDeferredTotal,
 				Double realPropertyValuationDeferredTotalRank,
 				Double localSalesTaxRate,
-				Double areaSquareMiles){
+				Double areaSquareMiles,
+				Double latitude,
+				Double longitude) {
 		
 			this.countyName = countyName;
 			this.population = population;
@@ -635,15 +672,17 @@ public class NCmap_normalized {
 			this.realPropertyValuationDeferredTotalRank = realPropertyValuationDeferredTotalRank;
 			this.localSalesTaxRate = localSalesTaxRate;
 			this.areaSquareMiles = areaSquareMiles;
+			this.latitude = latitude;
+			this.longitude = longitude;
 		}
-	}
 
-	public static Double parseDoubleOrNull(String s) {
-		try {
-			if (s == null || s.trim().isEmpty()) return null;
-			return Double.parseDouble(s.trim().replace(",", "."));
-		} catch (NumberFormatException e) {
-			return null;
+		public static Double parseDoubleOrNull(String s) {
+			try {
+				if (s == null || s.trim().isEmpty()) return null;
+				return Double.parseDouble(s.trim().replace(",", "."));
+			} catch (NumberFormatException e) {
+				return null;
+			}
 		}
 	}
 }
