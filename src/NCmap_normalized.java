@@ -7,18 +7,11 @@ import bridges.data_src_dependent.USState;
 import bridges.data_src_dependent.USCounty;
 import bridges.base.USMap;
 import bridges.base.Color;
-import bridges.base.Circle;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
-import bridges.connect.Bridges;
-import bridges.connect.DataSource;
-import bridges.data_src_dependent.USState;
-import bridges.data_src_dependent.USCounty;
 import bridges.base.SLelement;
-import bridges.base.USMap;
-import bridges.base.Color;
 
 // This program illustrates how to access the data of the US map with state
 // boundaries with different colors for states and its boundaries
@@ -54,10 +47,15 @@ public class NCmap_normalized {
 			"#fff5f0", "#fee0d2", "#fcbba1", "#fc9272", "#fb6a4a",
 			"#ef3b2c", "#cb181d", "#a50f15", "#67000d"
 		};
+
 		Number figure = null;
 		for (int i = 0; i < counties.size(); i++) {
 			County county = countyData.get(i);
-			figure = county.populationRank;
+			//////////////////////////////////////////////////////////////////////////////////////////////////
+
+			figure = county.agriculturalLandAcres; // <----------------- FEATURE TO VISUALIZE
+
+			//////////////////////////////////////////////////////////////////////////////////////////////////
 			// double minVal = min.numberOfFarms;
 			// double maxVal = max.numberOfFarms;
 			if (figure == null) {
@@ -134,13 +132,14 @@ public class NCmap_normalized {
 		}
         return;
     }
+
 	public static List<County> dataFetcher(){
 		String file = "src/Counties/Normalized-Table 1.csv";
         String line;
 		List<County> countyData = new ArrayList<>();
 		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 			while ((line = br.readLine()) != null) {
-				if (line.startsWith("Unnamed") || line.startsWith("Demographics")) continue;
+				if (line.startsWith("Unnamed") || line.startsWith("Demographics") || line.startsWith(",")) continue;
 
 				String[] values = line.split(",");
 				if (values.length < 120) {

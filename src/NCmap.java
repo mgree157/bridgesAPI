@@ -7,6 +7,8 @@ import bridges.data_src_dependent.USState;
 import bridges.data_src_dependent.USCounty;
 import bridges.base.USMap;
 import bridges.base.Color;
+import bridges.base.SLelement;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -64,9 +66,10 @@ public class NCmap {
 			"#ef3b2c", "#cb181d", "#a50f15", "#67000d"
 		};
 
+		Number figure = null;
 		for (int i = 0; i < counties.size(); i++) {
 			County county = countyData.get(i);
-			Number figure = county.adultsWithoutHSDiplomaPercent;
+			figure = county.adultsWithoutHSDiplomaPercent;
 			double minVal = min.numberOfFarms;
 			double maxVal = max.numberOfFarms;
 			if (figure == null) {
@@ -92,23 +95,44 @@ public class NCmap {
 			// map
 			USCounty c = counties.get(i);
 			c.setFillColor(new Color(r, g, b));
-			c.setStrokeColor(new Color(0, 0, 0));
+			c.setStrokeColor(new Color(r, g, b));
 		}
 		USMap us_maps = new USMap(map_data);
-		bridges.setDataStructure(us_maps);
-		bridges.visualize();
+		// set points and labels
+		bridges.setMap(us_maps);
+        bridges.setMapOverlay(true);
+		
+        // Set up a dummy data structure (head node)
+        SLelement<String> head = new SLelement<>("root", "root");
+
+        // Add each county as a sibling node to the head
+        SLelement<String> current = head;
+        for (County county : countyData) {
+            SLelement<String> node = new SLelement<>(county.countyName + " (" + figure + ")", county.countyName);
+			System.out.println("Adding node: " + county.countyName + " at (" + county.longitude + ", " + county.latitude + ")");
+            node.setLocation(county.longitude, county.latitude);
+            node.setColor(new Color(0,0,0)); 
+            node.setSize(1.0); 
+            current.setNext(node);
+            current = node;
+        }
+
+        // Set the data structure and visualize
+		
+        bridges.setDataStructure(head.getNext());
+        bridges.visualize();
 	}
 
 	public static List<County> dataFetcher(){
-		String file = "src/processedData.csv";
+		String file = "src/Counties/Processed-Table 1.csv";
         String line;
 		List<County> countyData = new ArrayList<>();
 		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 			while ((line = br.readLine()) != null) {
-				if (line.startsWith("Unnamed") || line.startsWith("Demographics")) continue;
+				if (line.startsWith("Unnamed") || line.startsWith("Demographics") || line.startsWith(",")) continue;
 
 				String[] values = line.split(",");
-				if (values.length < 31) {
+				if (values.length < 120) {
 					// System.err.println("Skipping line due to insufficient data: " + line);
 					continue;
 				}
@@ -231,7 +255,9 @@ public class NCmap {
 					parseDoubleOrNull(values[115]), // realPropertyValuationDeferredTotal
 					parseIntegerOrNull(values[116]), // realPropertyValuationDeferredTotalRank
 					parseDoubleOrNull(values[117]), // localSalesTaxRate
-					parseDoubleOrNull(values[118]) // areaSquareMiles
+					parseDoubleOrNull(values[118]), // areaSquareMiles
+					parseDoubleOrNull(values[119]), // longitude
+					parseDoubleOrNull(values[120]) // latitude
 				);
 				countyData.add(nexCounty);
 			}
@@ -389,6 +415,9 @@ public class NCmap {
 		Double localSalesTaxRate;
 		Double areaSquareMiles;
 
+		Double latitude;
+		Double longitude;
+
 		public County(
 				String countyName,
 				Double population,
@@ -508,7 +537,9 @@ public class NCmap {
 				Double realPropertyValuationDeferredTotal,
 				Integer realPropertyValuationDeferredTotalRank,
 				Double localSalesTaxRate,
-				Double areaSquareMiles){
+				Double areaSquareMiles,
+				Double latitude,
+				Double longitude) {
 		
 			this.countyName = countyName;
 			this.population = population;
@@ -629,6 +660,8 @@ public class NCmap {
 			this.realPropertyValuationDeferredTotalRank = realPropertyValuationDeferredTotalRank;
 			this.localSalesTaxRate = localSalesTaxRate;
 			this.areaSquareMiles = areaSquareMiles;
+			this.latitude = latitude;
+			this.longitude = longitude;
 		}
 	}
 
