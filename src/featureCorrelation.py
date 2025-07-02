@@ -11,7 +11,7 @@ def load_and_clean(csv_path, features):
 
 def compute_feature_vectors(df, features):
     # Each feature is a column, create a vector across all counties
-    return df[features].values.T  # shape: (n_features, n_counties)
+    return df[features].values.T  
 
 def feature_cosine_sim_matrix(vectors, features):
     # Compute cosine similarity matrix (symmetric)
@@ -25,8 +25,15 @@ def report_most_related(sim_df):
     # Find highest value
     max_val = sim_no_diag.max().max()
     pairs = [(i, j) for i in sim_no_diag.index for j in sim_no_diag.columns
-             if i != j and np.isclose(sim_no_diag.loc[i,j], max_val)]
+             if i != j and sim_no_diag.loc[i,j] > .9]
     return max_val, pairs
+
+def remove_upper_triangle(df, exclude_diag=False):
+   
+    if exclude_diag:
+        return df.where(np.tril(np.ones(df.shape), k=-1).astype(bool))
+    else:
+        return df.where(np.tril(np.ones(df.shape)).astype(bool))
 
 def main():
     csv_path = "src/Counties/Normalized-Table 1.csv"
@@ -63,6 +70,7 @@ def main():
                 "localSalesTaxRate","Area (Square Mile)","Lat","Long"]
 
     features = [f for f in features if not f.endswith("Rank")]
+    features = [f for f in features if not f.__contains__("Percent")]
 
     # proceed as before
     df = load_and_clean(csv_path, features)
@@ -75,7 +83,14 @@ def main():
     max_val, pairs = report_most_related(sim_df)
     print(f"Most related feature pair(s) (cosine ≈ {max_val:.3f}):")
     for i, j in pairs:
-        print(f"  • {i} ↔ {j}")
+        print(f"{sim_df.loc[i, j]:.3f}  • {i} ↔ {j}")
+
+    
+    # Create a sample DataFrame
+    dfOut = pd.DataFrame(sim_df)
+    dfOut = remove_upper_triangle(dfOut, exclude_diag=False)
+    # Save the DataFrame to a CSV file
+    dfOut.to_csv('output.csv', index=False)
 
 if __name__ == "__main__":
     main()

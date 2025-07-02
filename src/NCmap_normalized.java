@@ -21,9 +21,9 @@ import bridges.base.SLelement;
 public class NCmap_normalized {
 	public static void main(String[] args) throws Exception {
 
-		Bridges bridges = new Bridges(2002, "mgree157", "581575557990");
+		Bridges bridges = new Bridges(2005, "mgree157", "581575557990");
 		DataSource ds = bridges.getDataSource();
-		bridges.setTitle("Normalized North Carolina Map Visualization");
+		bridges.setTitle("GDP vs. Property Valuation in North Carolina");
 		bridges.setMapOverlay(true);
 		
 		// get bridges NC map structure
@@ -53,7 +53,7 @@ public class NCmap_normalized {
 			County county = countyData.get(i);
 			//////////////////////////////////////////////////////////////////////////////////////////////////
 
-			figure = county.agriculturalLandAcres; // <----------------- FEATURE TO VISUALIZE
+			figure = county.gdp2021; // <----------------- FEATURE TO VISUALIZE
 
 			//////////////////////////////////////////////////////////////////////////////////////////////////
 			// double minVal = min.numberOfFarms;
@@ -66,7 +66,7 @@ public class NCmap_normalized {
 			// Clamp and scale value to index 0–8
 			// double normalizedVal = ((figure - minVal) / (maxVal - minVal)) * 8;
 			int index = (int) Math.round(figure.doubleValue() * 8);
-			System.out.println(index + "\t" + figure + "\t" + figure.doubleValue()* 8 + "\t" + county.countyName);
+			// System.out.println(index + "\t" + figure + "\t" + figure.doubleValue()* 8 + "\t" + county.countyName);
 			if (index < 0) index = 0;
 			if (index > 8) index = 8;
 
@@ -83,28 +83,95 @@ public class NCmap_normalized {
 			c.setFillColor(new Color(r, g, b));
 			c.setStrokeColor(new Color(r, g, b));
 		}
+		
 		USMap us_maps = new USMap(map_data);
-		// set points and labels
 		bridges.setMap(us_maps);
         bridges.setMapOverlay(true);
-		
-        // Set up a dummy data structure (head node)
-        SLelement<String> head = new SLelement<>("root", "root");
+		bridges.setDataStructure(us_maps);
+		bridges.setTitle("gdp");
+        bridges.visualize();
 
-        // Add each county as a sibling node to the head
-        SLelement<String> current = head;
-        for (County county : countyData) {
-            SLelement<String> node = new SLelement<>(county.countyName + " (" + figure + ")", county.countyName);
-            node.setLocation(county.longitude, county.latitude);
-            node.setColor(new Color(0,0,0)); 
-            node.setSize(1.0); 
-            current.setNext(node);
-            current = node;
-        }
+		for (int i = 0; i < counties.size(); i++) {
+			County county = countyData.get(i);
+			//////////////////////////////////////////////////////////////////////////////////////////////////
 
-        // Set the data structure and visualize
+			figure = county.propertyValuationPerCapita; // <----------------- FEATURE TO VISUALIZE
+
+			//////////////////////////////////////////////////////////////////////////////////////////////////
+			// double minVal = min.numberOfFarms;
+			// double maxVal = max.numberOfFarms;
+			if (figure == null) {
+				System.out.println("\n!!! Skipping " + county.countyName);
+				continue;
+			}
+			
+			// Clamp and scale value to index 0–8
+			// double normalizedVal = ((figure - minVal) / (maxVal - minVal)) * 8;
+			int index = (int) Math.round(figure.doubleValue() * 8);
+			// System.out.println(index + "\t" + figure + "\t" + figure.doubleValue()* 8 + "\t" + county.countyName);
+			if (index < 0) index = 0;
+			if (index > 8) index = 8;
+
+			String hex = redScale[index];
+
+			// Convert hex to RGB
+			int r = Integer.valueOf(hex.substring(1, 3), 16);
+			int g = Integer.valueOf(hex.substring(3, 5), 16);
+			int b = Integer.valueOf(hex.substring(5, 7), 16);
+			// System.out.println(index + " " + r + ", " + g + ", " + b + "\t" + county.countyName);
+
+			// map
+			USCounty c = counties.get(i);
+			c.setFillColor(new Color(r, g, b));
+			c.setStrokeColor(new Color(r, g, b));
+		}
+		USMap us_maps2 = new USMap(map_data);
+		bridges.setMap(us_maps2);
+        bridges.setMapOverlay(true);
+		bridges.setDataStructure(us_maps2);
+		bridges.setTitle("property valuation per capita");
+        bridges.visualize();
 		
-        bridges.setDataStructure(head.getNext());
+		for (int i = 0; i < counties.size(); i++) {
+			County county = countyData.get(i);
+			//////////////////////////////////////////////////////////////////////////////////////////////////
+
+			figure = county.propertyValuationTotal; // <----------------- FEATURE TO VISUALIZE
+
+			//////////////////////////////////////////////////////////////////////////////////////////////////
+			// double minVal = min.numberOfFarms;
+			// double maxVal = max.numberOfFarms;
+			if (figure == null) {
+				System.out.println("\n!!! Skipping " + county.countyName);
+				continue;
+			}
+			
+			// Clamp and scale value to index 0–8
+			// double normalizedVal = ((figure - minVal) / (maxVal - minVal)) * 8;
+			int index = (int) Math.round(figure.doubleValue() * 8);
+			// System.out.println(index + "\t" + figure + "\t" + figure.doubleValue()* 8 + "\t" + county.countyName);
+			if (index < 0) index = 0;
+			if (index > 8) index = 8;
+
+			String hex = redScale[index];
+
+			// Convert hex to RGB
+			int r = Integer.valueOf(hex.substring(1, 3), 16);
+			int g = Integer.valueOf(hex.substring(3, 5), 16);
+			int b = Integer.valueOf(hex.substring(5, 7), 16);
+			// System.out.println(index + " " + r + ", " + g + ", " + b + "\t" + county.countyName);
+
+			// map
+			USCounty c = counties.get(i);
+			c.setFillColor(new Color(r, g, b));
+			c.setStrokeColor(new Color(r, g, b));
+		}
+		
+		USMap us_maps3 = new USMap(map_data);
+		bridges.setMap(us_maps3);
+        bridges.setMapOverlay(true);
+		bridges.setDataStructure(us_maps3);
+		bridges.setTitle("property valuation total");
         bridges.visualize();
 	}
 
