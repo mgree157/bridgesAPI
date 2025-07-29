@@ -21,7 +21,7 @@ import bridges.base.SLelement;
 public class NCmap_normalized {
 	public static void main(String[] args) throws Exception {
 
-		Bridges bridges = new Bridges(2005, "mgree157", "581575557990");
+		Bridges bridges = new Bridges(2006, "mgree157", "581575557990");
 		DataSource ds = bridges.getDataSource();
 		bridges.setTitle("GDP vs. Property Valuation in North Carolina");
 		bridges.setMapOverlay(true);
@@ -43,17 +43,12 @@ public class NCmap_normalized {
 		// align counties from bridges and county data by alphabetizing both lists
         alignCounties(counties, countyData);
 		
-		String[] redScale = {
-			"#fff5f0", "#fee0d2", "#fcbba1", "#fc9272", "#fb6a4a",
-			"#ef3b2c", "#cb181d", "#a50f15", "#67000d"
-		};
-
 		Number figure = null;
 		for (int i = 0; i < counties.size(); i++) {
 			County county = countyData.get(i);
 			//////////////////////////////////////////////////////////////////////////////////////////////////
 
-			figure = county.gdp2021; // <----------------- FEATURE TO VISUALIZE
+			figure = county.perCapitaIncome; // <----------------- FEATURE TO VISUALIZE
 
 			//////////////////////////////////////////////////////////////////////////////////////////////////
 			// double minVal = min.numberOfFarms;
@@ -63,20 +58,13 @@ public class NCmap_normalized {
 				continue;
 			}
 			
-			// Clamp and scale value to index 0–8
-			// double normalizedVal = ((figure - minVal) / (maxVal - minVal)) * 8;
-			int index = (int) Math.round(figure.doubleValue() * 8);
-			// System.out.println(index + "\t" + figure + "\t" + figure.doubleValue()* 8 + "\t" + county.countyName);
-			if (index < 0) index = 0;
-			if (index > 8) index = 8;
-
-			String hex = redScale[index];
-
-			// Convert hex to RGB
-			int r = Integer.valueOf(hex.substring(1, 3), 16);
-			int g = Integer.valueOf(hex.substring(3, 5), 16);
-			int b = Integer.valueOf(hex.substring(5, 7), 16);
-			// System.out.println(index + " " + r + ", " + g + ", " + b + "\t" + county.countyName);
+			int[] rgb = new int[3];
+			rgb = getColor(figure.doubleValue());
+			
+			int r = rgb[0];
+			int g = rgb[1];
+			int b = rgb[2];
+			
 
 			// map
 			USCounty c = counties.get(i);
@@ -88,14 +76,14 @@ public class NCmap_normalized {
 		bridges.setMap(us_maps);
         bridges.setMapOverlay(true);
 		bridges.setDataStructure(us_maps);
-		bridges.setTitle("gdp");
+		bridges.setTitle("per capita income");
         bridges.visualize();
 
 		for (int i = 0; i < counties.size(); i++) {
 			County county = countyData.get(i);
 			//////////////////////////////////////////////////////////////////////////////////////////////////
 
-			figure = county.propertyValuationPerCapita; // <----------------- FEATURE TO VISUALIZE
+			figure = county.k12FundingADM; // <----------------- FEATURE TO VISUALIZE
 
 			//////////////////////////////////////////////////////////////////////////////////////////////////
 			// double minVal = min.numberOfFarms;
@@ -105,21 +93,13 @@ public class NCmap_normalized {
 				continue;
 			}
 			
-			// Clamp and scale value to index 0–8
-			// double normalizedVal = ((figure - minVal) / (maxVal - minVal)) * 8;
-			int index = (int) Math.round(figure.doubleValue() * 8);
-			// System.out.println(index + "\t" + figure + "\t" + figure.doubleValue()* 8 + "\t" + county.countyName);
-			if (index < 0) index = 0;
-			if (index > 8) index = 8;
-
-			String hex = redScale[index];
-
-			// Convert hex to RGB
-			int r = Integer.valueOf(hex.substring(1, 3), 16);
-			int g = Integer.valueOf(hex.substring(3, 5), 16);
-			int b = Integer.valueOf(hex.substring(5, 7), 16);
-			// System.out.println(index + " " + r + ", " + g + ", " + b + "\t" + county.countyName);
-
+			int[] rgb = new int[3];
+			rgb = getColor(figure.doubleValue());
+			
+			int r = rgb[0];
+			int g = rgb[1];
+			int b = rgb[2];
+			
 			// map
 			USCounty c = counties.get(i);
 			c.setFillColor(new Color(r, g, b));
@@ -129,7 +109,7 @@ public class NCmap_normalized {
 		bridges.setMap(us_maps2);
         bridges.setMapOverlay(true);
 		bridges.setDataStructure(us_maps2);
-		bridges.setTitle("property valuation per capita");
+		bridges.setTitle("k12 funding ADM");
         bridges.visualize();
 		
 		for (int i = 0; i < counties.size(); i++) {
@@ -146,20 +126,12 @@ public class NCmap_normalized {
 				continue;
 			}
 			
-			// Clamp and scale value to index 0–8
-			// double normalizedVal = ((figure - minVal) / (maxVal - minVal)) * 8;
-			int index = (int) Math.round(figure.doubleValue() * 8);
-			// System.out.println(index + "\t" + figure + "\t" + figure.doubleValue()* 8 + "\t" + county.countyName);
-			if (index < 0) index = 0;
-			if (index > 8) index = 8;
-
-			String hex = redScale[index];
-
-			// Convert hex to RGB
-			int r = Integer.valueOf(hex.substring(1, 3), 16);
-			int g = Integer.valueOf(hex.substring(3, 5), 16);
-			int b = Integer.valueOf(hex.substring(5, 7), 16);
-			// System.out.println(index + " " + r + ", " + g + ", " + b + "\t" + county.countyName);
+			int[] rgb = new int[3];
+			rgb = getColor(figure.doubleValue());
+			
+			int r = rgb[0];
+			int g = rgb[1];
+			int b = rgb[2];
 
 			// map
 			USCounty c = counties.get(i);
@@ -175,6 +147,26 @@ public class NCmap_normalized {
         bridges.visualize();
 	}
 
+	public static int[] getColor(double value) {
+		// Clamp and scale value to index 0–8
+		String[] redScale = {
+			"#fff5f0", "#fee0d2", "#fcbba1", "#fc9272", "#fb6a4a",
+			"#ef3b2c", "#cb181d", "#a50f15", "#67000d"
+		};
+
+		int index = (int) Math.round(value * 8);
+		if (index < 0) index = 0;
+		if (index > 8) index = 8;
+
+		String hex = redScale[index];
+
+		// Convert hex to RGB
+		int r = Integer.valueOf(hex.substring(1, 3), 16);
+		int g = Integer.valueOf(hex.substring(3, 5), 16);
+		int b = Integer.valueOf(hex.substring(5, 7), 16);
+
+		return new int[]{r, g, b}; 
+	}
     public static void alignCounties(List<USCounty> counties, List<County> countyData) {
         // alphabetize counties
 		counties.sort((c1, c2) -> c1.getCountyName().compareTo(c2.getCountyName()));	
@@ -206,14 +198,9 @@ public class NCmap_normalized {
 		List<County> countyData = new ArrayList<>();
 		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 			while ((line = br.readLine()) != null) {
-				if (line.startsWith("Unnamed") || line.startsWith("Demographics") || line.startsWith(",")) continue;
+				if (line.startsWith("County")) continue;
 
 				String[] values = line.split(",");
-				if (values.length < 120) {
-					// System.err.println("Skipping line due to insufficient data: " + line);
-					continue;
-				}
-
 				County nexCounty = new County(
 					values[0], // countyName
 					County.parseDoubleOrNull(values[1]), // population
@@ -335,7 +322,21 @@ public class NCmap_normalized {
 					County.parseDoubleOrNull(values[117]), // localSalesTaxRate
 					County.parseDoubleOrNull(values[118]), // areaSquareMiles
 					County.parseDoubleOrNull(values[119]), // lat
-					County.parseDoubleOrNull(values[120]) // lng
+					County.parseDoubleOrNull(values[120]), // lng
+					County.parseDoubleOrNull(values[121]), // demVotePercent2000
+					County.parseDoubleOrNull(values[122]), // repVotePercent2000
+					County.parseDoubleOrNull(values[123]), // demVotePercent2004
+					County.parseDoubleOrNull(values[124]), // repVotePercent2004
+					County.parseDoubleOrNull(values[125]), // demVotePercent2008
+					County.parseDoubleOrNull(values[126]), // repVotePercent2008
+					County.parseDoubleOrNull(values[127]), // demVotePercent2012
+					County.parseDoubleOrNull(values[128]), // repVotePercent2012
+					County.parseDoubleOrNull(values[129]), // demVotePercent2016
+					County.parseDoubleOrNull(values[130]), // repVotePercent2016
+					County.parseDoubleOrNull(values[131]), // demVotePercent2020
+					County.parseDoubleOrNull(values[132]), // repVotePercent2020
+					County.parseDoubleOrNull(values[133]), // demVotePercent2024
+					County.parseDoubleOrNull(values[134])  // repVotePercent2024
 				);
 				countyData.add(nexCounty);
 			}
@@ -495,6 +496,21 @@ public class NCmap_normalized {
 
 		Double latitude;
 		Double longitude;
+		// demVotePercent2000	repVotePercent2000	demVotePercent2004	repVotePercent2004	demVotePercent2008	repVotePercent2008	demVotePercent2012	repVotePercent2012	demVotePercent2016	repVotePercent2016	demVotePercent2020	repVotePercent2020	demVotePercent2024	repVotePercent2024
+		Double demVotePercent2000;
+		Double repVotePercent2000;
+		Double demVotePercent2004;
+		Double repVotePercent2004;
+		Double demVotePercent2008;
+		Double repVotePercent2008;
+		Double demVotePercent2012;
+		Double repVotePercent2012;
+		Double demVotePercent2016;
+		Double repVotePercent2016;
+		Double demVotePercent2020;
+		Double repVotePercent2020;
+		Double demVotePercent2024;
+		Double repVotePercent2024;
 
 		public County(
 				String countyName,
@@ -617,8 +633,22 @@ public class NCmap_normalized {
 				Double localSalesTaxRate,
 				Double areaSquareMiles,
 				Double latitude,
-				Double longitude) {
-		
+				Double longitude,
+				Double demVotePercent2000,
+				Double repVotePercent2000,
+				Double demVotePercent2004,
+				Double repVotePercent2004,
+				Double demVotePercent2008,
+				Double repVotePercent2008,
+				Double demVotePercent2012,
+				Double repVotePercent2012,
+				Double demVotePercent2016,
+				Double repVotePercent2016,
+				Double demVotePercent2020,
+				Double repVotePercent2020,
+				Double demVotePercent2024,
+				Double repVotePercent2024) {
+				
 			this.countyName = countyName;
 			this.population = population;
 			this.populationRank = populationRank;
@@ -740,6 +770,20 @@ public class NCmap_normalized {
 			this.areaSquareMiles = areaSquareMiles;
 			this.latitude = latitude;
 			this.longitude = longitude;
+			this.demVotePercent2000 = demVotePercent2000;
+			this.repVotePercent2000 = repVotePercent2000;
+			this.demVotePercent2004 = demVotePercent2004;
+			this.repVotePercent2004 = repVotePercent2004;
+			this.demVotePercent2008 = demVotePercent2008;
+			this.repVotePercent2008 = repVotePercent2008;
+			this.demVotePercent2012 = demVotePercent2012;
+			this.repVotePercent2012 = repVotePercent2012;
+			this.demVotePercent2016 = demVotePercent2016;
+			this.repVotePercent2016 = repVotePercent2016;
+			this.demVotePercent2020 = demVotePercent2020;
+			this.repVotePercent2020 = repVotePercent2020;
+			this.demVotePercent2024 = demVotePercent2024;
+			this.repVotePercent2024 = repVotePercent2024;
 		}
 
 		public static Double parseDoubleOrNull(String s) {

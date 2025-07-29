@@ -1,7 +1,6 @@
-# cosine_features.py
+# pearson_features.py
 import pandas as pd
 import numpy as np
-from sklearn.metrics.pairwise import cosine_similarity
 
 def load_and_clean(csv_path, features):
     df = pd.read_csv(csv_path)
@@ -13,30 +12,29 @@ def compute_feature_vectors(df, features):
     # Each feature is a column, create a vector across all counties
     return df[features].values.T  
 
-def feature_cosine_sim_matrix(vectors, features):
-    # Compute cosine similarity matrix (symmetric)
-    sim = cosine_similarity(vectors)  # using sklearn :contentReference[oaicite:5]{index=5}
-    sim_df = pd.DataFrame(sim, index=features, columns=features)
-    return sim_df
+def feature_pearson_corr_matrix(vectors, features):
+    # Compute Pearson correlation matrix
+    corr = np.corrcoef(vectors)
+    corr_df = pd.DataFrame(corr, index=features, columns=features)
+    return corr_df
 
-def report_most_related(sim_df):
+def report_most_related(corr_df):
     # Mask diagonal
-    sim_no_diag = sim_df.where(~np.eye(sim_df.shape[0], dtype=bool))
+    corr_no_diag = corr_df.where(~np.eye(corr_df.shape[0], dtype=bool))
     # Find highest value
-    max_val = sim_no_diag.max().max()
-    pairs = [(i, j) for i in sim_no_diag.index for j in sim_no_diag.columns
-             if i != j and sim_no_diag.loc[i,j] > .9]
+    max_val = corr_no_diag.max().max()
+    pairs = [(i, j) for i in corr_no_diag.index for j in corr_no_diag.columns
+             if i != j and corr_no_diag.loc[i,j] > .9]
     return max_val, pairs
 
 def remove_upper_triangle(df, exclude_diag=False):
-   
     if exclude_diag:
         return df.where(np.tril(np.ones(df.shape), k=-1).astype(bool))
     else:
         return df.where(np.tril(np.ones(df.shape)).astype(bool))
 
 def main():
-    csv_path = "src/Counties/Normalized-Table 1.csv"
+    csv_path = "/Users/mylesgreen/Documents/UNCC compsci/our/src/Counties/Normalized-Table 1.csv"
     features = ["population","populationRank","populationPercentOfState","populationPercentOfStateRank",
                 "populationChangeSince2014","populationChangeSince2014Rank","populationChangeSince2014Number",
                 "populationChangeSince2014NumberRank","medianAge","medianAgeRank","medianAgeChangePercent",
@@ -67,30 +65,54 @@ def main():
                 "propertyTaxLevy","propertyTaxLevyRank","propertyTaxPerCapita","propertyTaxPerCapitaRank","propertyTaxTotalLevy",
                 "propertyTaxTotalLevyRank","PropertyValuationPerCapita","PropertyValuationPerCapitaRank","PropertyValuationTotal",
                 "PropertyValuationTotalRank","puvDeferredShare","puvDeferredShareRank","puvValuationDeferred","puvValuationDeferredRank",
-                "localSalesTaxRate","Area (Square Mile)","Lat","Long"]
+                "localSalesTaxRate","Area (Square Mile)","Lat","Long", "demVotePercent2000", "repVotePercent2000", "demVotePercent2004", 
+                "repVotePercent2004", "demVotePercent2008", "repVotePercent2008", "demVotePercent2012", "repVotePercent2012", 
+                "demVotePercent2016", "repVotePercent2016", "demVotePercent2020", "repVotePercent2020", "demVotePercent2024", 
+                "repVotePercent2024"]
 
+    print(f"Loaded {len(features)} features.")
+    # Remove rank and number-based features
     features = [f for f in features if not f.endswith("Rank")]
-    features = [f for f in features if not f.__contains__("Percent")]
+    features = [f for f in features if not f.endswith("Number")]
+    features = [f for f in features if not f.endswith("Total")]
+    features = [f for f in features if not f.endswith("lat")]
+    features = [f for f in features if not f.endswith("lng")]
 
-    # proceed as before
     df = load_and_clean(csv_path, features)
     vectors = compute_feature_vectors(df, features)
-    sim_df = feature_cosine_sim_matrix(vectors, features)
+    corr_df = feature_pearson_corr_matrix(vectors, features)
 
-    print("Cosine similarity between features:")
-    print(sim_df.round(3), "\n")
+    print("Pearson correlation between features:")
+    print(corr_df.round(5), "\n")
 
-    max_val, pairs = report_most_related(sim_df)
-    print(f"Most related feature pair(s) (cosine ≈ {max_val:.3f}):")
-    for i, j in pairs:
-        print(f"{sim_df.loc[i, j]:.3f}  • {i} ↔ {j}")
+    # Flatten lower triangle of correlation matrix (excluding diagonal)
+    tril_mask = np.tril(np.ones(corr_df.shape), k=-1).astype(bool)
+    tril_corr = corr_df.where(tril_mask)
 
-    
-    # Create a sample DataFrame
-    dfOut = pd.DataFrame(sim_df)
+    # Extract non-null values and sort
+    sorted_pairs = (
+        tril_corr.stack()
+        .reset_index()
+        .rename(columns={"level_0": "Feature 1", "level_1": "Feature 2", 0: "Correlation"})
+        .sort_values(by="Correlation", ascending=False)
+    )
+
+    print("Top correlated feature pairs (sorted, no duplicates):")
+    for _, row in sorted_pairs.iterrows():
+        if row['Correlation'] > 0.5:
+            print(f"{row['Correlation']:.8f}  • {row['Feature 1']} ↔ {row['Feature 2']}")
+
+    # Save full sorted list to CSV
+    sorted_pairs.to_csv("sorted_feature_correlations.csv", index=False)
+
+    # Optionally save matrix with upper triangle removed
+    dfOut = remove_upper_triangle(corr_df, exclude_diag=False)
+    dfOut.to_csv('output_pearson.csv', index=False)
+
+
+    dfOut = pd.DataFrame(corr_df)
     dfOut = remove_upper_triangle(dfOut, exclude_diag=False)
-    # Save the DataFrame to a CSV file
-    dfOut.to_csv('output.csv', index=False)
+    dfOut.to_csv('output_pearson.csv', index=False)
 
 if __name__ == "__main__":
     main()
