@@ -44,6 +44,19 @@ public class NCmap_normalized {
         alignCounties(counties, countyData);
 		
 		Number figure = null;
+
+		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+
+
+														// BEGINNING OF VISUALIZATION MODULES \\
+
+
+
+		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		
 		for (int i = 0; i < counties.size(); i++) {
 			County county = countyData.get(i);
 			//////////////////////////////////////////////////////////////////////////////////////////////////
@@ -116,7 +129,7 @@ public class NCmap_normalized {
 			County county = countyData.get(i);
 			//////////////////////////////////////////////////////////////////////////////////////////////////
 
-			figure = county.propertyValuationTotal; // <----------------- FEATURE TO VISUALIZE
+			figure = county.k12Funding; // <----------------- FEATURE TO VISUALIZE
 
 			//////////////////////////////////////////////////////////////////////////////////////////////////
 			// double minVal = min.numberOfFarms;
@@ -138,12 +151,143 @@ public class NCmap_normalized {
 			c.setFillColor(new Color(r, g, b));
 			c.setStrokeColor(new Color(r, g, b));
 		}
-		
 		USMap us_maps3 = new USMap(map_data);
 		bridges.setMap(us_maps3);
         bridges.setMapOverlay(true);
 		bridges.setDataStructure(us_maps3);
-		bridges.setTitle("property valuation total");
+		bridges.setTitle("k12 funding");
+        bridges.visualize();
+
+		for (int i = 0; i < counties.size(); i++) {
+			County county = countyData.get(i);
+			//////////////////////////////////////////////////////////////////////////////////////////////////
+
+			figure = county.propertyTaxLevyTotal; // <----------------- FEATURE TO VISUALIZE
+
+			//////////////////////////////////////////////////////////////////////////////////////////////////
+			// double minVal = min.numberOfFarms;
+			// double maxVal = max.numberOfFarms;
+			if (figure == null) {
+				System.out.println("\n!!! Skipping " + county.countyName);
+				continue;
+			}
+			
+			int[] rgb = new int[3];
+			rgb = getColor(figure.doubleValue());
+			
+			int r = rgb[0];
+			int g = rgb[1];
+			int b = rgb[2];
+
+			// map
+			USCounty c = counties.get(i);
+			c.setFillColor(new Color(r, g, b));
+			c.setStrokeColor(new Color(r, g, b));
+		}
+		USMap us_maps4 = new USMap(map_data);
+		bridges.setMap(us_maps4);
+        bridges.setMapOverlay(true);
+		bridges.setDataStructure(us_maps4);
+		bridges.setTitle("property tax levy total");
+        bridges.visualize();
+
+		for (int i = 0; i < counties.size(); i++) {
+			County county = countyData.get(i);
+			//////////////////////////////////////////////////////////////////////////////////////////////////
+
+			figure = county.medicaidEnrollmentExpansionNumber; // <----------------- FEATURE TO VISUALIZE
+
+			//////////////////////////////////////////////////////////////////////////////////////////////////
+			// double minVal = min.numberOfFarms;
+			// double maxVal = max.numberOfFarms;
+			if (figure == null) {
+				System.out.println("\n!!! Skipping " + county.countyName);
+				continue;
+			}
+			
+			int[] rgb = new int[3];
+			rgb = getColor(figure.doubleValue());
+			
+			int r = rgb[0];
+			int g = rgb[1];
+			int b = rgb[2];
+
+			// map
+			USCounty c = counties.get(i);
+			c.setFillColor(new Color(r, g, b));
+			c.setStrokeColor(new Color(r, g, b));
+		}
+		USMap us_maps5 = new USMap(map_data);
+		bridges.setMap(us_maps5);
+        bridges.setMapOverlay(true);
+		bridges.setDataStructure(us_maps5);
+		bridges.setTitle("medicaid enrollment expansion number");
+        bridges.visualize();
+		
+		for (int i = 0; i < counties.size(); i++) {
+			County county = countyData.get(i);
+			//////////////////////////////////////////////////////////////////////////////////////////////////
+
+			figure = county.childPovertyPercent; // <----------------- FEATURE TO VISUALIZE
+
+			//////////////////////////////////////////////////////////////////////////////////////////////////
+			// double minVal = min.numberOfFarms;
+			// double maxVal = max.numberOfFarms;
+			if (figure == null) {
+				System.out.println("\n!!! Skipping " + county.countyName);
+				continue;
+			}
+			
+			int[] rgb = new int[3];
+			rgb = getColor(figure.doubleValue());
+			
+			int r = rgb[0];
+			int g = rgb[1];
+			int b = rgb[2];
+
+			// map
+			USCounty c = counties.get(i);
+			c.setFillColor(new Color(r, g, b));
+			c.setStrokeColor(new Color(r, g, b));
+		}
+		USMap us_maps6 = new USMap(map_data);
+		bridges.setMap(us_maps6);
+        bridges.setMapOverlay(true);
+		bridges.setDataStructure(us_maps6);
+		bridges.setTitle("child poverty percent");
+        bridges.visualize();
+
+		for (int i = 0; i < counties.size(); i++) {
+			County county = countyData.get(i);
+			//////////////////////////////////////////////////////////////////////////////////////////////////
+
+			figure = county.educationalAttainmentNumber; // <----------------- FEATURE TO VISUALIZE
+
+			//////////////////////////////////////////////////////////////////////////////////////////////////
+			// double minVal = min.numberOfFarms;
+			// double maxVal = max.numberOfFarms;
+			if (figure == null) {
+				System.out.println("\n!!! Skipping " + county.countyName);
+				continue;
+			}
+			
+			int[] rgb = new int[3];
+			rgb = getColor(figure.doubleValue());
+			
+			int r = rgb[0];
+			int g = rgb[1];
+			int b = rgb[2];
+
+			// map
+			USCounty c = counties.get(i);
+			c.setFillColor(new Color(r, g, b));
+			c.setStrokeColor(new Color(r, g, b));
+		}
+		USMap us_maps7 = new USMap(map_data);
+		bridges.setMap(us_maps7);
+        bridges.setMapOverlay(true);
+		bridges.setDataStructure(us_maps7);
+		bridges.setTitle("educational attainment number");
         bridges.visualize();
 	}
 
